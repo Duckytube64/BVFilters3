@@ -39,17 +39,18 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
             this.comboBox2 = new System.Windows.Forms.ComboBox();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
             // LoadImageButton
             // 
             this.LoadImageButton.Location = new System.Drawing.Point(16, 15);
-            this.LoadImageButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LoadImageButton.Margin = new System.Windows.Forms.Padding(4);
             this.LoadImageButton.Name = "LoadImageButton";
             this.LoadImageButton.Size = new System.Drawing.Size(131, 28);
             this.LoadImageButton.TabIndex = 0;
@@ -66,7 +67,7 @@
             // imageFileName
             // 
             this.imageFileName.Location = new System.Drawing.Point(155, 17);
-            this.imageFileName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.imageFileName.Margin = new System.Windows.Forms.Padding(4);
             this.imageFileName.Name = "imageFileName";
             this.imageFileName.ReadOnly = true;
             this.imageFileName.Size = new System.Drawing.Size(275, 22);
@@ -75,7 +76,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(17, 55);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(683, 630);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -85,7 +86,7 @@
             // applyButton
             // 
             this.applyButton.Location = new System.Drawing.Point(563, 16);
-            this.applyButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.applyButton.Margin = new System.Windows.Forms.Padding(4);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(137, 28);
             this.applyButton.TabIndex = 3;
@@ -101,7 +102,7 @@
             // saveButton
             // 
             this.saveButton.Location = new System.Drawing.Point(1276, 0);
-            this.saveButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.saveButton.Margin = new System.Windows.Forms.Padding(4);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(127, 28);
             this.saveButton.TabIndex = 4;
@@ -112,7 +113,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Location = new System.Drawing.Point(708, 55);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(683, 630);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -122,7 +123,7 @@
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(708, 18);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(233, 25);
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
@@ -134,12 +135,7 @@
             this.comboBox1.FormattingEnabled = true;
             this.comboBox1.Items.AddRange(new object[] {
             "Nothing",
-            "Negative",
-            "Grayscale",
-            "Contrast adjustment",
-            "Gaussian filter",
-            "Linear filter",
-            "Nonlinear filter",
+            "Hough transform",
             "Edge detection",
             "Thresholding"});
             this.comboBox1.Location = new System.Drawing.Point(1121, 17);
@@ -159,19 +155,10 @@
             this.textBox1.TabIndex = 9;
             this.textBox1.Visible = false;
             // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(953, 18);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(77, 22);
-            this.textBox2.TabIndex = 10;
-            this.textBox2.Visible = false;
-            // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(1292, 27);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 28);
             this.button1.TabIndex = 11;
@@ -182,27 +169,35 @@
             // comboBox2
             // 
             this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            "Nothing",
+            "Prewitt",
+            "Sobel"});
             this.comboBox2.Location = new System.Drawing.Point(1000, 17);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(114, 24);
             this.comboBox2.TabIndex = 12;
-            this.comboBox2.Visible = false;
             this.comboBox2.Text = "Nothing";
-            this.comboBox2.Items.AddRange(new object[] {
-                "Nothing",
-                "Prewitt",
-                "Sobel",
-            });
-
+            this.comboBox2.Visible = false;
+            // 
+            // pictureBox3
+            // 
+            this.pictureBox3.Location = new System.Drawing.Point(708, 55);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureBox3.Name = "pictureBox3";
+            this.pictureBox3.Size = new System.Drawing.Size(683, 630);
+            this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.pictureBox3.TabIndex = 13;
+            this.pictureBox3.TabStop = false;
             // 
             // INFOIBV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1403, 709);
+            this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox2);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.progressBar);
@@ -213,12 +208,13 @@
             this.Controls.Add(this.imageFileName);
             this.Controls.Add(this.LoadImageButton);
             this.Location = new System.Drawing.Point(10, 10);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "INFOIBV";
             this.ShowIcon = false;
             this.Text = "INFOIBV";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -232,33 +228,8 @@
                 this.textBox1.Visible = true;
                 this.textBox1.Text = "threshold";
             }
-            else if ((string)cb.SelectedItem == "Linear filter")
-            {
-                this.textBox1.Visible = true;
-                this.textBox1.Text = "kernalsize";
-            }
-            else if ((string)cb.SelectedItem == "Gaussian filter")
-            {
-                this.textBox1.Visible = true;
-                this.textBox1.Text = "sigma";
-            }
-            else if ((string)cb.SelectedItem == "Nonlinear filter")
-            {
-                this.textBox1.Visible = true;
-                this.textBox1.Text = "median";
-            }
             else
                 this.textBox1.Visible = false;
-
-            if ((string)cb.SelectedItem == "Gaussian filter")
-            {
-                this.textBox2.Visible = true;
-                this.textBox2.Text = "kernelsize";
-            }
-            else
-            {
-                this.textBox2.Visible = false;
-            }
 
             if ((string)cb.SelectedItem == "Edge detection")
             {
@@ -268,6 +239,17 @@
             {
                 this.comboBox2.Visible = false;
                 this.comboBox2.Text = "Nothing";
+            }
+
+            if ((string)cb.SelectedItem == "Hough transform")
+            {
+                this.pictureBox2.Visible = false;
+                this.pictureBox3.Visible = true;
+            }
+            else
+            {
+                this.pictureBox3.Visible = false;
+                this.pictureBox2.Visible = true;
             }
         }
 
@@ -284,9 +266,9 @@
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.PictureBox pictureBox3;
     }
 }
 

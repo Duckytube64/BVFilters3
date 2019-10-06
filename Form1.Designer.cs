@@ -242,7 +242,7 @@
                 this.comboBox2.Text = "Nothing";
             }
 
-            if ((string)cb.SelectedItem == "Hough transform" || (string)cb.SelectedItem == "Hough Peak Finder")
+            if ((string)cb.SelectedItem == "Hough transform")
             {
                 this.pictureBox2.Visible = false;
                 this.pictureBox3.Visible = true;

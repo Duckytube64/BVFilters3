@@ -103,7 +103,7 @@ namespace INFOIBV
 
         private void HoughTransform()
         {
-            float thetaSize = 0.02f;
+            double thetaSize = 0.02;
             float rMax = 1;
             int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
             float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
@@ -112,14 +112,14 @@ namespace INFOIBV
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
                     if (Image[x, y].R != 255)
-                        for (float i = 0; i < Math.PI; i += thetaSize)
-                        {
-                            double r = x * Math.Cos(i) + y * Math.Sin(i);
+                        for (double i = 0; i < (Math.PI * 100); i += (thetaSize * 100))
+                        {                           
+                            double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
                             double rest = r % rMax;
                             if (rest < 0.5)
-                                accArray[(int)(i / thetaSize), Math.Abs((int)(r - rest))]++;
+                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r - rest))]++;
                             else
-                                accArray[(int)(i / thetaSize), Math.Abs((int)(r + (1 - rest)))]++;
+                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r + (1 - rest)))]++;
                         }
                 }
             }

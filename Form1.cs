@@ -76,6 +76,9 @@ namespace INFOIBV
                 case ("Hough transform"):
                     HoughTransform();
                     break;
+                case ("Hough Peak Finder"):
+                    HoughPeakFinder();
+                    break;
                 case ("Edge detection"):
                     EdgeDetection();
                     break;
@@ -142,6 +145,57 @@ namespace INFOIBV
             pictureBox3.Image = (Image)OutputImage;
 
             OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height);
+        }
+
+        private void HoughPeakFinder()
+        {
+            int threshold;
+
+            try
+            {
+                threshold = int.Parse(textBox1.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            for(int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for(int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    if (x > 0)
+                    {
+                        if (Image[x,y].R < Image[x - 1, y].R)
+                        {
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                    if (x < InputImage.Size.Width - 1)
+                    {
+                        if (Image[x,y].R < Image[x + 1,y].R)
+                        {
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                    if (y > 0)
+                    {
+                        if(Image[x,y].R < Image[x, y - 1].R)
+                        {
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                    if (y < InputImage.Size.Height - 1)
+                    {
+                        if(Image[x,y].R < Image[x, y + 1].R)
+                        {
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                }
+            }
+
+            Thresholding();
         }
 
         private void EdgeDetection()
@@ -277,6 +331,12 @@ namespace INFOIBV
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (pictureBox3.Visible)
+            {
+                pictureBox1.Image = pictureBox3.Image;
+                InputImage = new Bitmap(pictureBox3.Image);
+                return;
+            }
             if (OutputImage == null) return;                                // Get out if no output image
             pictureBox1.Image = pictureBox2.Image;
             InputImage = new Bitmap(pictureBox2.Image);

@@ -136,6 +136,7 @@
             this.comboBox1.Items.AddRange(new object[] {
             "Nothing",
             "Hough transform",
+            "Hough Peak Finder",
             "Edge detection",
             "Thresholding"});
             this.comboBox1.Location = new System.Drawing.Point(1121, 17);
@@ -223,7 +224,7 @@
         private void comboBox1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             System.Windows.Forms.ComboBox cb = (System.Windows.Forms.ComboBox)sender;
-            if ((string)cb.SelectedItem == "Thresholding")
+            if ((string)cb.SelectedItem == "Thresholding" || (string)cb.SelectedItem == "Hough Peak Finder")
             {
                 this.textBox1.Visible = true;
                 this.textBox1.Text = "threshold";
@@ -241,7 +242,7 @@
                 this.comboBox2.Text = "Nothing";
             }
 
-            if ((string)cb.SelectedItem == "Hough transform")
+            if ((string)cb.SelectedItem == "Hough transform" || (string)cb.SelectedItem == "Hough Peak Finder")
             {
                 this.pictureBox2.Visible = false;
                 this.pictureBox3.Visible = true;

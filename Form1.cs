@@ -108,7 +108,7 @@ namespace INFOIBV
             int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
             float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < InputImage.Size.Width; x++) {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
                     if (Image[x, y].R != 255)
@@ -116,28 +116,26 @@ namespace INFOIBV
                         {
                             double r = x * Math.Cos(i) + y * Math.Sin(i);
                             double rest = r % rMax;
-                            accArray[(int)(i / thetaSize), Math.Abs((int)(r - rest))]++;
+                            if (rest < 0.5)
+                                accArray[(int)(i / thetaSize), Math.Abs((int)(r - rest))]++;
+                            else
+                                accArray[(int)(i / thetaSize), Math.Abs((int)(r + (1 - rest)))]++;
                         }
                 }
+            }
 
             Color[,] houghImage = new Color[accArray.GetLength(0), accArray.GetLength(1)];
             OutputImage = new Bitmap(accArray.GetLength(0), accArray.GetLength(1));
 
             for (int x = 0; x < houghImage.GetLength(0); x++)
+            {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    int value =  (int)(accArray[x, y]) * 10;
+                    int value = (int)(accArray[x, y]) * 10;
                     if (value > 255)
                         value = 255;
                     houghImage[x, y] = Color.FromArgb(value, value, value);
                     OutputImage.SetPixel(x, y, houghImage[x, y]);
-                }
-
-            for (int x = 0; x < houghImage.GetLength(0); x++)
-            {
-                for (int y = 0; y < houghImage.GetLength(1); y++)
-                {
-                    OutputImage.SetPixel(x, y, houghImage[x, y]);               // Set the pixel color at coordinate (x,y)
                 }
             }
 

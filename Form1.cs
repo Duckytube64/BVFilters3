@@ -234,19 +234,52 @@ namespace INFOIBV
 
             Vector v = new Vector(Math.Cos(theta),Math.Sin(theta));
             v.Normalize();
-            Vector intersection = new Vector(v.X * r, v.Y * r);
+            Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
             Vector lineFormula = new Vector(v.Y, v.X);
-            List<Vector[]> linePairs = new List<Vector[]>();
+            List<Vector[]> linePairList = new List<Vector[]>();
             bool[,] inLine = new bool[Image.GetLength(0), Image.GetLength(1)];      // Any coordinate marked true is already part of the line and thus being counted double. When this is the case the pixel will be ignored
+            Vector[] linePair = new Vector[2];
+            bool makingLine = false;
+            int gapCount = 0, lengthCount = 0;
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
-                    if (Image[x,y].R <= minIntensity && !inLine[x,y])
+                    double factor = (x - intersectionPoint.X) / lineFormula.X;
+                    Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
+                    if (Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
                     {
-
-                    }
+                        if (Image[x, y].R <= minIntensity)
+                        {
+                            if (makingLine)
+                            {
+                                linePair[1] = new Vector(x, y);
+                            }
+                            else if (!inLine[x, y])
+                            {
+                                linePair[0] = new Vector(x, y);
+                                makingLine = true;
+                            }
+                            lengthCount++;
+                            inLine[x, y] = true;
+                        }
+                        else if (gapCount < maxGap && makingLine)
+                        {
+                            gapCount++;
+                            lengthCount++;
+                            linePair[1] = new Vector(x, y);
+                            inLine[x, y] = true;
+                        }
+       /*!!!*/          else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
+                        {
+                            if (lengthCount >= minLength)
+                                linePairList.Add(linePair);
+                            makingLine = false;
+                            gapCount = 0;
+                            lengthCount = 0;
+                        }
+                    }                    
                 }
             }
         }

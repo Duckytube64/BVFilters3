@@ -160,7 +160,16 @@ namespace INFOIBV
                 return;
             }
 
-            for(int x = 0; x < InputImage.Size.Width; x++)
+            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    OriginalImage[x, y] = Image[x, y];
+                }
+            }
+
+            for (int x = 0; x < InputImage.Size.Width; x++)
             {
                 for(int y = 0; y < InputImage.Size.Height; y++)
                 {
@@ -168,32 +177,34 @@ namespace INFOIBV
                     {
                         if (Image[x,y].R < Image[x - 1, y].R)
                         {
-                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                     if (x < InputImage.Size.Width - 1)
                     {
                         if (Image[x,y].R < Image[x + 1,y].R)
                         {
-                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                     if (y > 0)
                     {
                         if(Image[x,y].R < Image[x, y - 1].R)
                         {
-                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                     if (y < InputImage.Size.Height - 1)
                     {
                         if(Image[x,y].R < Image[x, y + 1].R)
                         {
-                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                 }
             }
+
+            Image = OriginalImage;
 
             Thresholding();
         }

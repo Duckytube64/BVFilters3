@@ -73,23 +73,11 @@ namespace INFOIBV
 
             switch (filter)
             {
-                case ("Negative"):
-                    Negative();
+                case ("Hough transform"):
+                    HoughTransform();
                     break;
-                case ("Grayscale"):
-                    Grayscale();
-                    break;
-                case ("Contrast adjustment"):
-                    ContrastAdjustment();
-                    break;
-                case ("Linear filter"):
-                    LinearFilter();
-                    break;
-                case ("Nonlinear filter"):
-                    NonlinearFilter();
-                    break;
-                case ("Gaussian filter"):
-                    GaussianFilter();
+                case ("Hough Peak Finder"):
+                    HoughPeakFinder();
                     break;
                 case ("Edge detection"):
                     EdgeDetection();
@@ -116,217 +104,98 @@ namespace INFOIBV
             progressBar.Visible = false;                                    // Hide progress bar
         }
 
-        private void Negative()
+        private void HoughTransform()
         {
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
+            double thetaSize = 0.02;
+            float rMax = 1;
+            int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
+            float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
+
+            for (int x = 0; x < InputImage.Size.Width; x++) {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
-                    Color pixelColor = Image[x, y];                         // Get the pixel color at coordinate (x,y)
-                    Color updatedColor = Color.FromArgb(255 - pixelColor.R, 255 - pixelColor.G, 255 - pixelColor.B); // Negative image
-                    Image[x, y] = updatedColor;                             // Set the new pixel color at coordinate (x,y)
-                    progressBar.PerformStep();                              // Increment progress bar
+                    if (Image[x, y].R != 255)
+                        for (double i = 0; i < (Math.PI * 100); i += (thetaSize * 100))
+                        {                           
+                            double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
+                            double rest = r % rMax;
+                            if (rest < 0.5)
+                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r - rest))]++;
+                            else
+                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r + (1 - rest)))]++;
+                        }
                 }
             }
-        }
 
-        private void Grayscale()
-        {
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            Color[,] houghImage = new Color[accArray.GetLength(0), accArray.GetLength(1)];
+            OutputImage = new Bitmap(accArray.GetLength(0), accArray.GetLength(1));
+
+            for (int x = 0; x < houghImage.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    Color pixelColor = Image[x, y];                         // Get the pixel color at coordinate (x,y)
-                    int Clinear = (int)(0.2126f * pixelColor.R + 0.7152 * pixelColor.G + 0.0722 * pixelColor.B); // Calculate grayscale
-                    Color updatedColor = Color.FromArgb(Clinear, Clinear, Clinear); // Grayscale image
-                    Image[x, y] = updatedColor;                             // Set the new pixel color at coordinate (x,y)
-                    progressBar.PerformStep();                              // Increment progress bar
+                    int value = (int)(accArray[x, y]) * 10;
+                    if (value > 255)
+                        value = 255;
+                    houghImage[x, y] = Color.FromArgb(value, value, value);
+                    OutputImage.SetPixel(x, y, houghImage[x, y]);
                 }
             }
+
+            pictureBox3.Image = (Image)OutputImage;
+
+            OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height);
         }
 
-        private void ContrastAdjustment()
+        private void HoughPeakFinder()
         {
-            byte minimumValue = 255, maximumValue = 0;
-
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {
-                    byte value = Image[x, y].R;                             // Get the pixel color at coordinate (x,y)
-                    if (value > maximumValue)                               // Get the lowest and highest grayscale values of the picture
-                        maximumValue = value;
-                    if (value < minimumValue)
-                        minimumValue = value;
-                }
-            }
-
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {               
-                    float value = Image[x, y].R;                            // Get the pixel grayscale color at coordinate (x,y)
-                    value -= minimumValue;                                  // Calculate the pixel's "grayness" as a percent between minimum- and maximumValue
-                    value /= (maximumValue - minimumValue);
-                    int grayColor = (int)(255 * value);
-                    Image[x, y] = Color.FromArgb(grayColor, grayColor, grayColor);   // Set pixel's color to be this same percent of grayness, but then between 0 and 255
-                    progressBar.PerformStep();                              // Increment progress bar
-                }
-            }
-        }
-
-        private void LinearFilter()
-        {
-            int kernalsize;
+            int threshold;
 
             try
             {
-                kernalsize = int.Parse(textBox1.Text);
+                threshold = int.Parse(textBox1.Text);
             }
             catch
             {
                 return;
             }
 
-            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for(int x = 0; x < InputImage.Size.Width; x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for(int y = 0; y < InputImage.Size.Height; y++)
                 {
-                    OriginalImage[x, y] = Image[x, y];
-                }
-            }
-
-            int totalsize = (2 * kernalsize + 1) * (2 * kernalsize + 1);
-
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {
-                    int totalvalue = 0;
-                    for (int i = 0 - kernalsize; i <= kernalsize; i++)               // Loop over all pixels in the kernal and add their value to total value
+                    if (x > 0)
                     {
-                        for (int j = 0 - kernalsize; j <= kernalsize; j++)
+                        if (Image[x,y].R < Image[x - 1, y].R)
                         {
-                            if (x + i >= 0 && y + j >= 0 && x + i < InputImage.Size.Width && y + j < InputImage.Size.Height)        // If a pixel is out of image bounds, it has value 0
-                                totalvalue += OriginalImage[x + i, y + j].R;
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
-
-                    totalvalue /= totalsize;
-                    Image[x, y] = Color.FromArgb(totalvalue, totalvalue, totalvalue);
-                    progressBar.PerformStep();
-                }
-            }
-        }
-
-        private void NonlinearFilter()
-        {
-            int medianSize;
-
-            try
-            {
-                medianSize = int.Parse(textBox1.Text);
-            }
-            catch
-            {
-                return;
-            }
-
-            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {
-                    OriginalImage[x, y] = Image[x, y];
-                }
-            }
-
-            float[] pixelValues = new float[(int)Math.Pow(medianSize * 2 + 1, 2)];
-
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {                   
-                    float value = Image[x, y].R;                            // Get the pixel color at coordinate (x,y)
-                    int counter = 0;
-                    for (int i = -medianSize; i <= medianSize; i++)         // Get color values for all pixels in median range
+                    if (x < InputImage.Size.Width - 1)
                     {
-                        for (int j = -medianSize; j <= medianSize; j++)
+                        if (Image[x,y].R < Image[x + 1,y].R)
                         {
-                            if (x + i >= 0 && x + i < InputImage.Size.Width && y + j >= 0 && y + j < InputImage.Size.Height)
-                            {
-                                pixelValues[counter] = (OriginalImage[x + i, y + j].R);
-                                counter++;
-                            }
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
-
-                    Array.Sort(pixelValues);
-                    int newValue = (int)pixelValues[pixelValues.Length / 2 + 1];
-                    Image[x, y] = Color.FromArgb(newValue, newValue, newValue);     // Set the new pixel color at coordinate (x,y)
-                    progressBar.PerformStep();                              // Increment progress bar
-                }
-            }
-        }
-
-        private void GaussianFilter()
-        {
-            double euler = Math.E;
-            float sigma;
-            int kernelSize;
-
-            try
-            {
-                sigma = float.Parse(textBox1.Text);                         // Try to get the sigma by parsing
-                kernelSize = int.Parse(textBox2.Text);                      // Try to get the kernelsize by parsing
-            }
-            catch
-            {
-                return;
-            }
-            if (sigma < 0 || kernelSize < 0)
-                return;
-
-            double[,] weightskernel = new double[kernelSize * 2 + 1, kernelSize * 2 + 1];
-            double total = 0;
-
-            for (int i = -kernelSize; i <= kernelSize; i++)                 // Calculate initial weight for each cell in the kernel
-            {
-                for (int j = -kernelSize; j <= kernelSize; j++)
-                {
-                    double value = Math.Pow(euler, -(i * i + j * j) / (2 * sigma * sigma));
-                    weightskernel[i + kernelSize, j + kernelSize] = value;
-                    total += value;
-                }
-            }
-
-            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {
-                    OriginalImage[x, y] = Image[x, y];
-                }
-            }
-
-            for (int x = 0; x < InputImage.Size.Width; x++)
-            {
-                for (int y = 0; y < InputImage.Size.Height; y++)
-                {
-                    double newGray = 0;
-                    for (int i = -kernelSize; i <= kernelSize; i++)
+                    if (y > 0)
                     {
-                        for (int j = -kernelSize; j <= kernelSize; j++)
+                        if(Image[x,y].R < Image[x, y - 1].R)
                         {
-                            if (x + i >= 0 && x + i < InputImage.Size.Width && y + j >= 0 && y + j < InputImage.Size.Height)
-                                newGray += (weightskernel[i + kernelSize, j + kernelSize] / total) * OriginalImage[x + i, y + j].R;       // Add the pixels fraction of its color to the new color of Image[x,y]
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
-                    Image[x, y] = Color.FromArgb((int)newGray, (int)newGray, (int)newGray);     // Update pixel in image
-                    progressBar.PerformStep();                              // Increment progress bar
+                    if (y < InputImage.Size.Height - 1)
+                    {
+                        if(Image[x,y].R < Image[x, y + 1].R)
+                        {
+                            Image[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
                 }
             }
+
+            Thresholding();
         }
 
         private void EdgeDetection()
@@ -462,6 +331,12 @@ namespace INFOIBV
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (pictureBox3.Visible)
+            {
+                pictureBox1.Image = pictureBox3.Image;
+                InputImage = new Bitmap(pictureBox3.Image);
+                return;
+            }
             if (OutputImage == null) return;                                // Get out if no output image
             pictureBox1.Image = pictureBox2.Image;
             InputImage = new Bitmap(pictureBox2.Image);

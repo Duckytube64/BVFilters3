@@ -248,7 +248,7 @@ namespace INFOIBV
                 {
                     double factor = (x - intersectionPoint.X) / lineFormula.X;
                     Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
-                    if (Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
+                    if (lineFormula.X == 0 && (int)intersectionPoint.X == x || Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
                     {
                         if (Image[x, y].R <= minIntensity)
                         {

@@ -171,7 +171,7 @@
             "Nothing",
             "Prewitt",
             "Sobel"});
-            this.comboBox2.Location = new System.Drawing.Point(750, 14);
+            this.comboBox2.Location = new System.Drawing.Point(751, 14);
             this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.Size = new System.Drawing.Size(86, 21);
@@ -225,14 +225,14 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1052, 576);
+            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.textBox4);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.textBox2);
             this.Controls.Add(this.pictureBox3);
-            this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.pictureBox2);
@@ -256,7 +256,7 @@
         private void comboBox1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             System.Windows.Forms.ComboBox cb = (System.Windows.Forms.ComboBox)sender;
-            if ((string)cb.SelectedItem == "Thresholding" || (string)cb.SelectedItem == "Hough Peak Finder")
+            if ((string)cb.SelectedItem == "Thresholding" || (string)cb.SelectedItem == "Hough peak finder")
             {
                 this.textBox1.Visible = true;
                 this.textBox1.Text = "threshold";

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Numerics;
+using System.Windows;
 
 namespace INFOIBV
 {
@@ -76,8 +78,11 @@ namespace INFOIBV
                 case ("Hough transform"):
                     HoughTransform();
                     break;
-                case ("Hough Peak Finder"):
+                case ("Hough peak finder"):
                     HoughPeakFinder();
+                    break;
+                case ("Hough line detection"):
+                    HoughLineDectection();
                     break;
                 case ("Edge detection"):
                     EdgeDetection();
@@ -207,6 +212,43 @@ namespace INFOIBV
             Image = OriginalImage;
 
             Thresholding();
+        }
+
+        private void HoughLineDectection()
+        {
+            int minLength, maxGap;
+            double r, theta, minIntensity;
+
+            try
+            {
+                r = double.Parse(textBox2.Text.Split(' ')[0]);
+                theta = double.Parse(textBox2.Text.Split(' ')[1]);
+                minIntensity = int.Parse(textBox3.Text);
+                minLength = int.Parse(textBox4.Text);
+                maxGap = int.Parse(textBox5.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            Vector v = new Vector(Math.Cos(theta),Math.Sin(theta));
+            v.Normalize();
+            Vector intersection = new Vector(v.X * r, v.Y * r);
+            Vector lineFormula = new Vector(v.Y, v.X);
+            List<Vector[]> linePairs = new List<Vector[]>();
+            bool[,] inLine = new bool[Image.GetLength(0), Image.GetLength(1)];      // Any coordinate marked true is already part of the line and thus being counted double. When this is the case the pixel will be ignored
+
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    if (Image[x,y].R <= minIntensity && !inLine[x,y])
+                    {
+
+                    }
+                }
+            }
         }
 
         private void EdgeDetection()

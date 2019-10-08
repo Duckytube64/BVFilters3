@@ -114,7 +114,7 @@ namespace INFOIBV
             double thetaSize = 0.02;
             float rMax = 1;
             int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
-            float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
+            float[,] accArray = new float[diag, (int)Math.Ceiling(Math.PI / thetaSize)];
 
             for (int x = 0; x < InputImage.Size.Width; x++) {
                 for (int y = 0; y < InputImage.Size.Height; y++)
@@ -125,9 +125,9 @@ namespace INFOIBV
                             double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
                             double rest = r % rMax;
                             if (rest < 0.5)
-                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r - rest))]++;
+                                accArray[Math.Abs((int)(r - rest)), (int)(i / (thetaSize * 100))]++;
                             else
-                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r + (1 - rest)))]++;
+                                accArray[Math.Abs((int)(r + (1 - rest))), (int)(i / (thetaSize * 100))]++;
                         }
                 }
             }
@@ -247,7 +247,7 @@ namespace INFOIBV
                 return;
             }
 
-            Vector v = new Vector(Math.Cos(theta),Math.Sin(theta));
+            Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
             v.Normalize();
             Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
             Vector lineFormula = new Vector(v.Y, v.X);
@@ -286,7 +286,8 @@ namespace INFOIBV
                             linePair[1] = new Vector(x, y);
                             inLine[x, y] = true;
                         }
-       /*!!!*/          else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
+                        /*!!!*/
+                        else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
                         {
                             if (lengthCount >= minLength)
                                 linePairList.Add(linePair);
@@ -294,9 +295,21 @@ namespace INFOIBV
                             gapCount = 0;
                             lengthCount = 0;
                         }
-                    }                    
+                    }
                 }
             }
+
+            string message = "";
+
+            for (int i = 0; i < linePairList.Count; i++)
+            {
+                Vector v1 = linePairList.ElementAt(i).ElementAt(0);
+                Vector v2 = linePairList.ElementAt(i).ElementAt(1);
+
+                message += "Line segment " + (i + 1) + ": (" + v1.X + ", " + v1.Y + "), (" + v2.X + ", " + v2.Y + ")\n";
+            }
+
+            MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void EdgeDetection()

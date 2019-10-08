@@ -176,32 +176,32 @@ namespace INFOIBV
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
-                for(int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < InputImage.Size.Height; y++)
                 {
                     if (x > 0)
                     {
-                        if (Image[x,y].R < Image[x - 1, y].R)
+                        if (Image[x, y].R < Image[x - 1, y].R)
                         {
                             OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                     if (x < InputImage.Size.Width - 1)
                     {
-                        if (Image[x,y].R < Image[x + 1,y].R)
+                        if (Image[x, y].R < Image[x + 1, y].R)
                         {
                             OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                     if (y > 0)
                     {
-                        if(Image[x,y].R < Image[x, y - 1].R)
+                        if (Image[x, y].R < Image[x, y - 1].R)
                         {
                             OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
                     if (y < InputImage.Size.Height - 1)
                     {
-                        if(Image[x,y].R < Image[x, y + 1].R)
+                        if (Image[x, y].R < Image[x, y + 1].R)
                         {
                             OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
@@ -212,6 +212,21 @@ namespace INFOIBV
             Image = OriginalImage;
 
             Thresholding();
+
+            string message = "R/Theta-pairs: \n";
+
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    if (Image[x, y].R > 0)
+                    {
+                        message += "(" + x + ", " + y + ")\n";
+                    }
+                }
+            }
+
+            MessageBox.Show(message, "R/Theta-pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void HoughLineDectection()

@@ -254,8 +254,9 @@ namespace INFOIBV
             List<Vector[]> linePairList = new List<Vector[]>();
             bool[,] inLine = new bool[Image.GetLength(0), Image.GetLength(1)];      // Any coordinate marked true is already part of the line and thus being counted double. When this is the case the pixel will be ignored
             Vector[] linePair = new Vector[2];
-            bool makingLine = false;
+            bool makingLine = false, onGap = false;
             int gapCount = 0, lengthCount = 0;
+            Vector startGap = new Vector(0,0);
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
@@ -276,6 +277,8 @@ namespace INFOIBV
                                 linePair[0] = new Vector(x, y);
                                 makingLine = true;
                             }
+                            gapCount = 0;
+                            onGap = false;
                             lengthCount++;
                             inLine[x, y] = true;
                         }
@@ -283,12 +286,17 @@ namespace INFOIBV
                         {
                             gapCount++;
                             lengthCount++;
+                            if (!onGap)
+                                startGap = linePair[1];
                             linePair[1] = new Vector(x, y);
                             inLine[x, y] = true;
+                            onGap = true;
                         }
                         /*!!!*/
                         else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
                         {
+                            if (gapCount >= maxGap)
+                                linePair[1] = startGap;
                             if (lengthCount >= minLength)
                                 linePairList.Add(linePair);
                             makingLine = false;

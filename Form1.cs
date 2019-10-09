@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Numerics;
+using System.Windows;
 
 namespace INFOIBV
 {
@@ -76,6 +78,12 @@ namespace INFOIBV
                 case ("Hough transform"):
                     HoughTransform();
                     break;
+                case ("Hough peak finder"):
+                    HoughPeakFinder();
+                    break;
+                case ("Hough line detection"):
+                    HoughLineDectection();
+                    break;
                 case ("Edge detection"):
                     EdgeDetection();
                     break;
@@ -103,47 +111,205 @@ namespace INFOIBV
 
         private void HoughTransform()
         {
-            float thetaSize = 0.02f;
+            double thetaSize = 0.02;
             float rMax = 1;
             int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
-            float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
+            float[,] accArray = new float[diag, (int)Math.Ceiling(Math.PI / thetaSize)];
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < InputImage.Size.Width; x++) {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
                     if (Image[x, y].R != 255)
-                        for (float i = 0; i < Math.PI; i += thetaSize)
-                        {
-                            double r = x * Math.Cos(i) + y * Math.Sin(i);
+                        for (double i = 0; i < (Math.PI * 100); i += (thetaSize * 100))
+                        {                           
+                            double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
                             double rest = r % rMax;
-                            accArray[(int)(i / thetaSize), Math.Abs((int)(r - rest))]++;
+                            if (rest < 0.5)
+                                accArray[Math.Abs((int)(r - rest)), (int)(i / (thetaSize * 100))]++;
+                            else
+                                accArray[Math.Abs((int)(r + (1 - rest))), (int)(i / (thetaSize * 100))]++;
                         }
                 }
+            }
 
             Color[,] houghImage = new Color[accArray.GetLength(0), accArray.GetLength(1)];
             OutputImage = new Bitmap(accArray.GetLength(0), accArray.GetLength(1));
 
             for (int x = 0; x < houghImage.GetLength(0); x++)
+            {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    int value =  (int)(accArray[x, y]) * 10;
+                    int value = (int)(accArray[x, y]) * 10;
                     if (value > 255)
                         value = 255;
                     houghImage[x, y] = Color.FromArgb(value, value, value);
                     OutputImage.SetPixel(x, y, houghImage[x, y]);
-                }
-
-            for (int x = 0; x < houghImage.GetLength(0); x++)
-            {
-                for (int y = 0; y < houghImage.GetLength(1); y++)
-                {
-                    OutputImage.SetPixel(x, y, houghImage[x, y]);               // Set the pixel color at coordinate (x,y)
                 }
             }
 
             pictureBox3.Image = (Image)OutputImage;
 
             OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height);
+        }
+
+        private void HoughPeakFinder()
+        {
+            int threshold;
+
+            try
+            {
+                threshold = int.Parse(textBox1.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    OriginalImage[x, y] = Image[x, y];
+                }
+            }
+
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    if (x > 0)
+                    {
+                        if (Image[x, y].R < Image[x - 1, y].R)
+                        {
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                    if (x < InputImage.Size.Width - 1)
+                    {
+                        if (Image[x, y].R < Image[x + 1, y].R)
+                        {
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                    if (y > 0)
+                    {
+                        if (Image[x, y].R < Image[x, y - 1].R)
+                        {
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                    if (y < InputImage.Size.Height - 1)
+                    {
+                        if (Image[x, y].R < Image[x, y + 1].R)
+                        {
+                            OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
+                        }
+                    }
+                }
+            }
+
+            Image = OriginalImage;
+
+            Thresholding();
+
+            string message = "R/Theta-pairs: \n";
+
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    if (Image[x, y].R > 0)
+                    {
+                        message += "(" + x + ", " + y + ")\n";
+                    }
+                }
+            }
+
+            MessageBox.Show(message, "R/Theta-pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void HoughLineDectection()
+        {
+            int minLength, maxGap;
+            double r, theta, minIntensity;
+
+            try
+            {
+                r = double.Parse(textBox2.Text.Split(' ')[0]);
+                theta = double.Parse(textBox2.Text.Split(' ')[1]);
+                minIntensity = int.Parse(textBox3.Text);
+                minLength = int.Parse(textBox4.Text);
+                maxGap = int.Parse(textBox5.Text);
+            }
+            catch
+            {
+                return;
+            }
+
+            Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
+            v.Normalize();
+            Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
+            Vector lineFormula = new Vector(v.Y, v.X);
+            List<Vector[]> linePairList = new List<Vector[]>();
+            bool[,] inLine = new bool[Image.GetLength(0), Image.GetLength(1)];      // Any coordinate marked true is already part of the line and thus being counted double. When this is the case the pixel will be ignored
+            Vector[] linePair = new Vector[2];
+            bool makingLine = false;
+            int gapCount = 0, lengthCount = 0;
+
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    double factor = (x - intersectionPoint.X) / lineFormula.X;
+                    Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
+                    if (lineFormula.X == 0 && (int)intersectionPoint.X == x || Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
+                    {
+                        if (Image[x, y].R <= minIntensity)
+                        {
+                            if (makingLine)
+                            {
+                                linePair[1] = new Vector(x, y);
+                            }
+                            else if (!inLine[x, y])
+                            {
+                                linePair[0] = new Vector(x, y);
+                                makingLine = true;
+                            }
+                            lengthCount++;
+                            inLine[x, y] = true;
+                        }
+                        else if (gapCount < maxGap && makingLine)
+                        {
+                            gapCount++;
+                            lengthCount++;
+                            linePair[1] = new Vector(x, y);
+                            inLine[x, y] = true;
+                        }
+                        /*!!!*/
+                        else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
+                        {
+                            if (lengthCount >= minLength)
+                                linePairList.Add(linePair);
+                            makingLine = false;
+                            gapCount = 0;
+                            lengthCount = 0;
+                        }
+                    }
+                }
+            }
+
+            string message = "";
+
+            for (int i = 0; i < linePairList.Count; i++)
+            {
+                Vector v1 = linePairList.ElementAt(i).ElementAt(0);
+                Vector v2 = linePairList.ElementAt(i).ElementAt(1);
+
+                message += "Line segment " + (i + 1) + ": (" + v1.X + ", " + v1.Y + "), (" + v2.X + ", " + v2.Y + ")\n";
+            }
+
+            MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void EdgeDetection()
@@ -279,6 +445,12 @@ namespace INFOIBV
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if (pictureBox3.Visible)
+            {
+                pictureBox1.Image = pictureBox3.Image;
+                InputImage = new Bitmap(pictureBox3.Image);
+                return;
+            }
             if (OutputImage == null) return;                                // Get out if no output image
             pictureBox1.Image = pictureBox2.Image;
             InputImage = new Bitmap(pictureBox2.Image);

@@ -109,14 +109,16 @@ namespace INFOIBV
             progressBar.Visible = false;                                    // Hide progress bar
         }
 
+        double dAng;                // Deze gaan we in andere methodes nodig hebben om de goede theta uit te rekenen die horen bij een [ia, ir] paar
+
         private void HoughTransform()
         {
             int xCtr = InputImage.Size.Width / 2;
             int yCtr = InputImage.Size.Height / 2;
             int nAng = 360;
-            int nRad = 360;
+            int nRad = 360;         // Moet deze niet de maximale r zijn? dus de diagonaal van het plaatje?
             int cRad = nRad / 2;
-            double dAng = Math.PI / nAng;
+            dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
             double dRad = (2.0 * rMax) / nRad;
             int[,] houghArray = new int[nAng,nRad];
@@ -150,7 +152,7 @@ namespace INFOIBV
             {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    int value = (int)(houghArray[x, y] * 10);
+                    int value = (houghArray[x, y] * 10);
                     if (value > 255)
                         value = 255;
                     houghImage[x, y] = Color.FromArgb(value, value, value);
@@ -158,7 +160,7 @@ namespace INFOIBV
                 }
             }
 
-            pictureBox3.Image = (Image)OutputImage;
+            pictureBox3.Image = OutputImage;
 
             OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height);
         }
@@ -232,7 +234,7 @@ namespace INFOIBV
                 {
                     if (Image[x, y].R > 0)
                     {
-                        message += "(" + x + ", " + y + ")\n";
+                        message += "(" + y + ", " + x + ")\n";  // X is theta here, so for a R/Theta pair we use y, then x
                     }
                 }
             }
@@ -258,7 +260,7 @@ namespace INFOIBV
                 return;
             }
 
-            Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
+            Vector v = new Vector(Math.Cos(theta * dAng), Math.Sin(theta * dAng));
             v.Normalize();
             Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
             Vector lineFormula = new Vector(v.Y, v.X);

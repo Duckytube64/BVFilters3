@@ -111,35 +111,46 @@ namespace INFOIBV
 
         private void HoughTransform()
         {
-            double thetaSize = 0.02;
-            float rMax = 1;
-            int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
-            float[,] accArray = new float[diag, (int)Math.Ceiling(Math.PI / thetaSize)];
+            int xCtr = InputImage.Size.Width / 2;
+            int yCtr = InputImage.Size.Height / 2;
+            int nAng = 360;
+            int nRad = 360;
+            int cRad = nRad / 2;
+            double dAng = Math.PI / nAng;
+            double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
+            double dRad = (2.0 * rMax) / nRad;
+            int[,] houghArray = new int[nAng,nRad];
 
-            for (int x = 0; x < InputImage.Size.Width; x++) {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+            int h = InputImage.Size.Height;
+            int w = InputImage.Size.Width;
+            for (int v = 0; v < h; v++)
+            {
+                for (int u = 0; u < w; u++)
                 {
-                    if (Image[x, y].R != 255)
-                        for (double i = 0; i < (Math.PI * 100); i += (thetaSize * 100))
-                        {                           
-                            double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
-                            double rest = r % rMax;
-                            if (rest < 0.5)
-                                accArray[Math.Abs((int)(r - rest)), (int)(i / (thetaSize * 100))]++;
-                            else
-                                accArray[Math.Abs((int)(r + (1 - rest))), (int)(i / (thetaSize * 100))]++;
+                    if (Image[u,v].R < 255)
+                    {
+                        int x = u - xCtr;
+                        int y = v - yCtr;
+
+                        for(int ia = 0; ia < nAng; ia++)
+                        {
+                            double theta = dAng * ia;
+                            int ir = cRad + (int) ((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
+                            if (ir >= 0 && ir < nRad)
+                                houghArray[ia, ir]++;
                         }
+                    }
                 }
             }
-
-            Color[,] houghImage = new Color[accArray.GetLength(0), accArray.GetLength(1)];
-            OutputImage = new Bitmap(accArray.GetLength(0), accArray.GetLength(1));
+            
+            Color[,] houghImage = new Color[houghArray.GetLength(0), houghArray.GetLength(1)];
+            OutputImage = new Bitmap(houghArray.GetLength(0), houghArray.GetLength(1));
 
             for (int x = 0; x < houghImage.GetLength(0); x++)
             {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    int value = (int)(accArray[x, y]) * 10;
+                    int value = (int)(houghArray[x, y] * 10);
                     if (value > 255)
                         value = 255;
                     houghImage[x, y] = Color.FromArgb(value, value, value);

@@ -114,20 +114,21 @@ namespace INFOIBV
             double thetaSize = 0.02;
             float rMax = 1;
             int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
-            float[,] accArray = new float[diag, (int)Math.Ceiling(Math.PI / thetaSize)];
+            float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
 
-            for (int x = 0; x < InputImage.Size.Width; x++) {
+            for (int x = 0; x < InputImage.Size.Width; x++)
+            {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
                     if (Image[x, y].R != 255)
                         for (double i = 0; i < (Math.PI * 100); i += (thetaSize * 100))
-                        {                           
+                        {
                             double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
                             double rest = r % rMax;
                             if (rest < 0.5)
-                                accArray[Math.Abs((int)(r - rest)), (int)(i / (thetaSize * 100))]++;
+                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r - rest))]++;
                             else
-                                accArray[Math.Abs((int)(r + (1 - rest))), (int)(i / (thetaSize * 100))]++;
+                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r + (1 - rest)))]++;
                         }
                 }
             }
@@ -142,12 +143,12 @@ namespace INFOIBV
                     int value = (int)(accArray[x, y]) * 10;
                     if (value > 255)
                         value = 255;
-                    houghImage[x, y] = Color.FromArgb(value, value, value);
-                    OutputImage.SetPixel(x, y, houghImage[x, y]);
+                    houghImage[houghImage.GetLength(0) - x - 1, houghImage.GetLength(1) - y - 1] = Color.FromArgb(value, value, value);
+                    OutputImage.SetPixel(houghImage.GetLength(0) - x - 1, houghImage.GetLength(1) - y - 1, houghImage[houghImage.GetLength(0) - x - 1, houghImage.GetLength(1) - y - 1]);
                 }
             }
 
-            pictureBox3.Image = (Image)OutputImage;
+            pictureBox3.Image = OutputImage;
 
             OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height);
         }
@@ -246,8 +247,7 @@ namespace INFOIBV
             {
                 return;
             }
-
-            Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
+            Vector v = new Vector(Math.Cos(theta / 100), Math.Sin(theta / 100));
             v.Normalize();
             Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
             Vector lineFormula = new Vector(v.Y, v.X);
@@ -262,9 +262,11 @@ namespace INFOIBV
             {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
-                    double factor = (x - intersectionPoint.X) / lineFormula.X;
-                    Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
-                    if (lineFormula.X == 0 && (int)intersectionPoint.X == x || Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
+                    double xFactor = (x - intersectionPoint.X) / lineFormula.X;
+                    double yFactor = (y - intersectionPoint.Y) / lineFormula.Y;
+                    Vector linePointX = intersectionPoint + xFactor * lineFormula; // Get the position of the line at the same x value
+                    Vector linePointY = intersectionPoint + yFactor * lineFormula; // Get the position of the line at the same y value
+                    if (Math.Abs(y - linePointX.Y) < 1 || Math.Abs(x - linePointY.X) < 1)  // If linePoint's y is 'within' the pixel's y or within the pixel's x
                     {
                         if (Image[x, y].R <= minIntensity)
                         {

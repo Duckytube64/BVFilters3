@@ -116,7 +116,7 @@ namespace INFOIBV
             int xCtr = InputImage.Size.Width / 2;
             int yCtr = InputImage.Size.Height / 2;
             int nAng = 360;
-            int nRad = 360;         // Moet deze niet de maximale r zijn? dus de diagonaal van het plaatje?
+            int nRad = 360;         
             int cRad = nRad / 2;
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);

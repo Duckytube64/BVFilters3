@@ -123,16 +123,19 @@ namespace INFOIBV
             double dRad = (2.0 * rMax) / nRad;
             int[,] houghArray = new int[nAng,nRad];
 
-            for (int y = 0; y < InputImage.Size.Height; y++)
+            for (int v = 0; v < InputImage.Size.Height; v++)
             {
-                for (int x = 0; x < InputImage.Size.Width; x++)
+                for (int u = 0; u < InputImage.Size.Width; u++)
                 {
-                    if (Image[x,y].R < 255)
+                    if (Image[u,v].R < 255)
                     {
+                        int x = u - xCtr;
+                        int y = v - yCtr;
+
                         for(int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
-                            int ir = (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
+                            int ir = cRad + (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
                             if (ir >= 0 && ir < nRad)
                                 houghArray[ia, ir]++;
                         }

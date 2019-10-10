@@ -146,14 +146,26 @@ namespace INFOIBV
             Color[,] houghImage = new Color[houghArray.GetLength(0), houghArray.GetLength(1)];
             OutputImage = new Bitmap(houghArray.GetLength(0), houghArray.GetLength(1));
 
+            double maxval = 0;
+
             for (int x = 0; x < houghImage.GetLength(0); x++)
             {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    int value = (houghArray[x, y] * 10);
+                    if (houghArray[x, y] > maxval)
+                        maxval = houghArray[x, y];
+                }
+            }
+
+            for (int x = 0; x < houghImage.GetLength(0); x++)
+            {
+                for (int y = 0; y < houghImage.GetLength(1); y++)
+                {
+                    double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
+                    //int value = houghArray[x, y] * 10;
                     if (value > 255)
                         value = 255;
-                    houghImage[x, y] = Color.FromArgb(value, value, value);
+                    houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
                     OutputImage.SetPixel(x, y, houghImage[x, y]);
                 }
             }

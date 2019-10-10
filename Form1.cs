@@ -116,28 +116,23 @@ namespace INFOIBV
             int xCtr = InputImage.Size.Width / 2;
             int yCtr = InputImage.Size.Height / 2;
             int nAng = 360;
-            int nRad = 360;         
+            int nRad = 360;         // Moet deze niet de maximale r zijn? dus de diagonaal van het plaatje?
             int cRad = nRad / 2;
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
             double dRad = (2.0 * rMax) / nRad;
             int[,] houghArray = new int[nAng,nRad];
 
-            int h = InputImage.Size.Height;
-            int w = InputImage.Size.Width;
-            for (int v = 0; v < h; v++)
+            for (int y = 0; y < InputImage.Size.Height; y++)
             {
-                for (int u = 0; u < w; u++)
+                for (int x = 0; x < InputImage.Size.Width; x++)
                 {
-                    if (Image[u,v].R < 255)
+                    if (Image[x,y].R < 255)
                     {
-                        int x = u - xCtr;
-                        int y = v - yCtr;
-
                         for(int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
-                            int ir = cRad + (int) Math.Floor(((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad));
+                            int ir = (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
                             if (ir >= 0 && ir < nRad)
                                 houghArray[ia, ir]++;
                         }
@@ -227,6 +222,7 @@ namespace INFOIBV
             Thresholding();
 
             string message = "R/Theta-pairs: \n";
+            bool second = false;
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
@@ -234,7 +230,16 @@ namespace INFOIBV
                 {
                     if (Image[x, y].R > 0)
                     {
-                        message += "(" + y + ", " + x + ")\n";  // X is theta here, so for a R/Theta pair we use y, then x
+                        if (!second)
+                        {
+                            message += "(" + y + ", " + x + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
+                            second = true;
+                        }
+                        else
+                        {
+                            message += "(" + y + ", " + x + "),\n";
+                            second = false;
+                        }
                     }
                 }
             }
@@ -269,7 +274,7 @@ namespace INFOIBV
             Vector[] linePair = new Vector[2];
             bool makingLine = false, onGap = false;
             int gapCount = 0, lengthCount = 0;
-            Vector startGap = new Vector(0,0);
+            Vector lastOnLine = new Vector(0,0);
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
@@ -294,28 +299,37 @@ namespace INFOIBV
                             onGap = false;
                             lengthCount++;
                             inLine[x, y] = true;
+                            lastOnLine = new Vector(x, y);
                         }
                         else if (gapCount < maxGap && makingLine)
                         {
                             gapCount++;
                             lengthCount++;
                             if (!onGap)
-                                startGap = linePair[1];
+                                lastOnLine = linePair[1];
                             linePair[1] = new Vector(x, y);
                             inLine[x, y] = true;
                             onGap = true;
                         }
                         /*!!!*/
-                        else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
+                        else if (gapCount >= maxGap)   // Add line pair to list if line ends or we've arrived at the opposite border of the image
                         {
-                            if (gapCount >= maxGap)
-                                linePair[1] = startGap;
+                            linePair[1] = lastOnLine;
                             if (lengthCount >= minLength)
+                            {
                                 linePairList.Add(linePair);
+                                linePair = new Vector[2];
+                            }
                             makingLine = false;
                             gapCount = 0;
                             lengthCount = 0;
                         }
+                    }
+                    else if (x == InputImage.Size.Width - 1 && y == InputImage.Size.Height - 1 && makingLine)
+                    {
+                        linePair[1] = lastOnLine;
+                        if (lengthCount >= minLength)
+                            linePairList.Add(linePair);
                     }
                 }
             }

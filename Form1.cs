@@ -135,7 +135,7 @@ namespace INFOIBV
                         for(int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
-                            int ir = cRad + (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
+                            int ir = cRad + (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);     // r zou niet afhankelijk moeten zijn van stapgrootte
                             if (ir >= 0 && ir < nRad)
                                 houghArray[ia, ir]++;
                         }
@@ -162,9 +162,6 @@ namespace INFOIBV
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
                     double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
-                    //int value = houghArray[x, y] * 10;
-                    if (value > 255)
-                        value = 255;
                     houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
                     OutputImage.SetPixel(x, y, houghImage[x, y]);
                 }

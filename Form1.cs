@@ -116,7 +116,7 @@ namespace INFOIBV
             int xCtr = InputImage.Size.Width / 2;
             int yCtr = InputImage.Size.Height / 2;
             int nAng = 360;
-            int nRad = 360;         // Moet deze niet de maximale r zijn? dus de diagonaal van het plaatje?
+            int nRad = 360;         
             int cRad = nRad / 2;
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
@@ -137,7 +137,7 @@ namespace INFOIBV
                         for(int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
-                            int ir = cRad + (int) ((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
+                            int ir = cRad + (int) Math.Floor(((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad));
                             if (ir >= 0 && ir < nRad)
                                 houghArray[ia, ir]++;
                         }

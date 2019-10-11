@@ -87,9 +87,6 @@ namespace INFOIBV
                 case ("Edge detection"):
                     EdgeDetection();
                     break;
-                case ("Thresholding"):
-                    Thresholding();
-                    break;
                 case ("Nothing"):
                 default:
                     break;
@@ -111,13 +108,14 @@ namespace INFOIBV
 
         double dAng;                // Deze gaan we in andere methodes nodig hebben om de goede theta uit te rekenen die horen bij een [ia, ir] paar
         double dRad;
+        Color[,] houghImage;
 
         private void HoughTransform()
         {
             int xCtr = InputImage.Size.Width / 2;
             int yCtr = InputImage.Size.Height / 2;
-            int nAng = 360;
-            int nRad = 360;         
+            int nAng = 90;
+            int nRad = 90;         
             int cRad = nRad / 2;
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
@@ -144,7 +142,7 @@ namespace INFOIBV
                 }
             }
             
-            Color[,] houghImage = new Color[houghArray.GetLength(0), houghArray.GetLength(1)];
+            houghImage = new Color[houghArray.GetLength(0), houghArray.GetLength(1)];
             OutputImage = new Bitmap(houghArray.GetLength(0), houghArray.GetLength(1));
 
             double maxval = 0;
@@ -163,8 +161,8 @@ namespace INFOIBV
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
                     double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
-                    houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
-                    OutputImage.SetPixel(x, y, houghImage[x, y]);
+                    houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);                    
+                    OutputImage.SetPixel(x, y, houghImage[x,y]);
                 }
             }
 
@@ -232,7 +230,7 @@ namespace INFOIBV
 
             Image = OriginalImage;
 
-            Thresholding();
+            Thresholding(threshold);
 
             string message = "R/Theta-pairs: \n";
             bool second = false;
@@ -256,6 +254,7 @@ namespace INFOIBV
                             second = false;
                         }
                     }
+                    progressBar.PerformStep();                              // Increment progress bar
                 }
             }
 
@@ -416,30 +415,42 @@ namespace INFOIBV
             }
         }
 
-        private void Thresholding()
+        private void Thresholding(int percent)
         {
-            int threshold;
-            try
+            percent = Math.Max(0, Math.Min(100, percent));              // Clamp threshold between 0 and 255              
+            int totalPixels = 0;
+            int[] histogram = new int[256];
+            for (int x = 0; x < InputImage.Size.Width; x++)
             {
-                threshold = int.Parse(textBox1.Text);                       // Try to get the threshold by parsing
+                for (int y = 0; y < InputImage.Size.Height; y++)
+                {
+                    if (houghImage[x, y].R > 0)
+                    {
+                        totalPixels++;
+                        histogram[houghImage[x, y].R]++;
+                    }
+                }
             }
-            catch
-            {
-                return;
-            }
+            int nrPixels = (int)((float)totalPixels / 100 * percent);
+            int counter = 0;
+            int threshold = 0;
 
-            threshold = Math.Max(0, Math.Min(255, threshold));              // Clamp threshold between 0 and 255              
+            for (int i = histogram.Length - 1; i >= 0; i--)
+            {
+                counter += histogram[i];
+                if (counter >= nrPixels)
+                {
+                    threshold = i;
+                    break;
+                }
+            }
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
-                    Color pixelColor = Image[x, y];                         // Get the pixel color at coordinate (x,y)
-                    if (pixelColor.R > threshold)                           // Set color to black if grayscale (thus either R, G or B) is above threshold, else make the color white
-                        Image[x, y] = Color.White;
-                    else
+                    if (Image[x, y].R < threshold)                          // Set color to black if grayscale (thus either R, G or B) is above threshold, else make the color white
                         Image[x, y] = Color.Black;
-                    progressBar.PerformStep();                              // Increment progress bar
                 }
             }
         }

@@ -256,10 +256,10 @@
         private void comboBox1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             System.Windows.Forms.ComboBox cb = (System.Windows.Forms.ComboBox)sender;
-            if ((string)cb.SelectedItem == "Thresholding" || (string)cb.SelectedItem == "Hough peak finder")
+            if ((string)cb.SelectedItem == "Hough peak finder")
             {
                 this.textBox1.Visible = true;
-                this.textBox1.Text = "threshold";
+                this.textBox1.Text = "threshold%";
             }
             else
                 this.textBox1.Visible = false;

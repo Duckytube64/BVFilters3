@@ -135,9 +135,7 @@
             "Nothing",
             "Hough transform",
             "Hough peak finder",
-            "Hough line detection",
-            "Edge detection",
-            "Thresholding"});
+            "Hough line detection"});
             this.comboBox1.Location = new System.Drawing.Point(841, 14);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
@@ -152,7 +150,7 @@
             this.textBox1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(59, 20);
-            this.textBox1.TabIndex = 9;
+            this.textBox1.TabIndex = 1;
             this.textBox1.Visible = false;
             // 
             // button1
@@ -267,24 +265,7 @@
         private void comboBox1_SelectedIndexChanged(object sender, System.EventArgs e)
         {
             System.Windows.Forms.ComboBox cb = (System.Windows.Forms.ComboBox)sender;
-            if ((string)cb.SelectedItem == "Hough peak finder")
-            {
-                this.textBox1.Visible = true;
-                this.textBox1.Text = "threshold%";
-            }
-            else
-                this.textBox1.Visible = false;
-
-            if ((string)cb.SelectedItem == "Edge detection")
-            {
-                this.comboBox2.Visible = true;
-            }
-            else
-            {
-                this.comboBox2.Visible = false;
-                this.comboBox2.Text = "Nothing";
-            }
-
+                        
             if ((string)cb.SelectedItem == "Hough transform")
             {
                 this.textBox1.Visible = true;
@@ -300,6 +281,16 @@
                 this.textBox6.Visible = false;
                 this.pictureBox3.Visible = false;
                 this.pictureBox2.Visible = true;
+            }
+
+            if ((string)cb.SelectedItem == "Hough peak finder")
+            {
+                this.textBox1.Visible = true;
+                this.textBox1.Text = "threshold %";
+            }
+            else if ((string)cb.SelectedItem != "Hough transform")
+            {
+                this.textBox1.Visible = false;
             }
 
             if ((string)cb.SelectedItem == "Hough line detection")

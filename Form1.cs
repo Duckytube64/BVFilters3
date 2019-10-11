@@ -111,8 +111,8 @@ namespace INFOIBV
         {
             int xCtr = InputImage.Size.Width / 2;
             int yCtr = InputImage.Size.Height / 2;
-            int nAng = 90;
-            int nRad = 90;         
+            int nAng = 360;
+            int nRad = 360;         
             int cRad = nRad / 2;
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
@@ -140,7 +140,8 @@ namespace INFOIBV
             {
                 for (int u = 0; u < InputImage.Size.Width; u++)
                 {
-                    if (Image[u,v].R < 255)
+                    float edgestrenght = EdgeDetection(u, v);
+                    if (Image[u,v].R <= 255)
                     {
                         int x = u - xCtr;
                         int y = v - yCtr;
@@ -153,8 +154,7 @@ namespace INFOIBV
                                 int ir = cRad + (int)Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
                                 if (ir >= 0 && ir < nRad)
                                 {
-                                    houghArray[ia, ir] += 1;
-                                    //EdgeDetection(u,v);
+                                    houghArray[ia, ir] += edgestrenght;
                                 }
                             }
                         }
@@ -384,17 +384,8 @@ namespace INFOIBV
         private float EdgeDetection(int x, int y)
         {
             double normalisationFactor = 1f / 8f;
-            double[,] edgeFilterX = GetEDFilter(comboBox2.Text + "x");
-            double[,] edgeFilterY = GetEDFilter(comboBox2.Text + "y");            
-
-            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
-            for (int a = 0; a < InputImage.Size.Width; a++)
-            {
-                for (int b = 0; b < InputImage.Size.Height; b++)
-                {
-                    OriginalImage[x, y] = Image[x, y];
-                }
-            }
+            double[,] edgeFilterX = GetEDFilter("Sobelx");
+            double[,] edgeFilterY = GetEDFilter("Sobely");
 
             double totalX = 0, totalY = 0;
             for (int i = -1; i <= 1; i++)
@@ -403,8 +394,8 @@ namespace INFOIBV
                 {
                     if (x + i >= 0 && x + i < InputImage.Size.Width && y + j >= 0 && y + j < InputImage.Size.Height)
                     {
-                        totalX += OriginalImage[x + i, y + j].R * edgeFilterX[i + 1, j + 1];
-                        totalY += OriginalImage[x + i, y + j].R * edgeFilterY[i + 1, j + 1];
+                        totalX += Image[x + i, y + j].R * edgeFilterX[i + 1, j + 1];
+                        totalY += Image[x + i, y + j].R * edgeFilterY[i + 1, j + 1];
                     }
                     // If the selected pixel is out of bounds, count that pixel value as 0, which does nothing
                 }

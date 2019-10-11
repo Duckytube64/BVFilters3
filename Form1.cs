@@ -254,6 +254,7 @@ namespace INFOIBV
 
             string message = "R/Theta-pairs: \n";
             bool second = false;
+            List<Vector> rThetaPairs = new List<Vector>();
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
@@ -263,18 +264,23 @@ namespace INFOIBV
                     {
                         int valx = (int)((x * dAng) * 180 / Math.PI);
                         int valy = (int)Math.Abs((y - 180) * dRad);
-                        if (!second)
-                        {
-                            message += "(" + valy + ", " + valx + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
-                            second = true;
-                        }
-                        else
-                        {
-                            message += "(" + valy + ", " + valx + "),\n";
-                            second = false;
-                        }
+                        rThetaPairs.Add(new Vector(valy, valx));
                     }
                     progressBar.PerformStep();                              // Increment progress bar
+                }
+            }
+
+            foreach(Vector rTheta in rThetaPairs.Distinct())
+            {
+                if (!second)
+                {
+                    message += "(" + rTheta.X + ", " + rTheta.Y + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
+                    second = true;
+                }
+                else
+                {
+                    message += "(" + rTheta.X + ", " + rTheta.Y + "),\n";
+                    second = false;
                 }
             }
 

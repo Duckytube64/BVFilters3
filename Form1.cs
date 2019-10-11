@@ -110,6 +110,7 @@ namespace INFOIBV
         }
 
         double dAng;                // Deze gaan we in andere methodes nodig hebben om de goede theta uit te rekenen die horen bij een [ia, ir] paar
+        double dRad;
 
         private void HoughTransform()
         {
@@ -120,7 +121,7 @@ namespace INFOIBV
             int cRad = nRad / 2;
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
-            double dRad = (2.0 * rMax) / nRad;
+            dRad = (2.0 * rMax) / nRad;
             int[,] houghArray = new int[nAng,nRad];
 
             for (int v = 0; v < InputImage.Size.Height; v++)
@@ -242,14 +243,16 @@ namespace INFOIBV
                 {
                     if (Image[x, y].R > 0)
                     {
+                        int valx = (int)((x * dAng) * 180 / Math.PI);
+                        int valy = (int)Math.Abs((y - 180) * dRad);
                         if (!second)
                         {
-                            message += "(" + y + ", " + x + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
+                            message += "(" + valy + ", " + valx + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
                             second = true;
                         }
                         else
                         {
-                            message += "(" + y + ", " + x + "),\n";
+                            message += "(" + valy + ", " + valx + "),\n";
                             second = false;
                         }
                     }

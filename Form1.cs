@@ -140,7 +140,6 @@ namespace INFOIBV
             {
                 for (int u = 0; u < InputImage.Size.Width; u++)
                 {
-                    float edgestrenght = EdgeDetection(u, v);
                     if (Image[u,v].R <= 255)
                     {
                         int x = u - xCtr;
@@ -154,11 +153,12 @@ namespace INFOIBV
                                 int ir = cRad + (int)Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
                                 if (ir >= 0 && ir < nRad)
                                 {
-                                    houghArray[ia, ir] += edgestrenght;
+                                    houghArray[ia, ir] += EdgeDetection(u, v);
                                 }
                             }
                         }
                     }
+                    progressBar.PerformStep();                              // Increment progress bar
                 }
             }
             
@@ -381,18 +381,30 @@ namespace INFOIBV
             MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        // Initialising arrays seems to take a lot of time. Since we never change these arrays, we might as well define them once instead of each time the method below is called upon.
+        int[,] edgeFilterX = new int[,]
+        {
+                        { -1, 0, 1 },
+                        { -2, 0, 2 },
+                        { -1, 0, 1 }
+        };
+        int[,] edgeFilterY = new int[,]
+                {
+                        { -1, -2, -1 },
+                        { 0, 0, 0 },
+                        { 1, 2, 1 }
+                };
+
         private float EdgeDetection(int x, int y)
         {
             double normalisationFactor = 1f / 8f;
-            double[,] edgeFilterX = GetEDFilter("Sobelx");
-            double[,] edgeFilterY = GetEDFilter("Sobely");
-
             double totalX = 0, totalY = 0;
+            int width = InputImage.Size.Width, height = InputImage.Size.Height;
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
                 {
-                    if (x + i >= 0 && x + i < InputImage.Size.Width && y + j >= 0 && y + j < InputImage.Size.Height)
+                    if (x + i >= 0 && x + i < width && y + j >= 0 && y + j < height)
                     {
                         totalX += Image[x + i, y + j].R * edgeFilterX[i + 1, j + 1];
                         totalY += Image[x + i, y + j].R * edgeFilterY[i + 1, j + 1];
@@ -443,34 +455,6 @@ namespace INFOIBV
                     if (Image[x, y].R < threshold)                          // Set color to black if grayscale (thus either R, G or B) is above threshold, else make the color white
                         Image[x, y] = Color.Black;
                 }
-            }
-        }
-
-        private double[,] GetEDFilter(string filterName)
-        {
-            switch (filterName)
-            {
-                case ("Sobelx"):
-                    return new double[,]
-                    {
-                        { -1, 0, 1 },
-                        { -2, 0, 2 },
-                        { -1, 0, 1 }
-                    };
-                case ("Sobely"):
-                    return new double[,]
-                    {
-                        { -1, -2, -1 },
-                        { 0, 0, 0 },
-                        { 1, 2, 1 }
-                    };
-                default:
-                    return new double[,]
-                    {
-                        { 0, 0, 0 },
-                        { 0, 0, 0 },
-                        { 0, 0, 0 }
-                    };
             }
         }
 

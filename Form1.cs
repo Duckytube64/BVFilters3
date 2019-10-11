@@ -103,7 +103,7 @@ namespace INFOIBV
             progressBar.Visible = false;                                    // Hide progress bar
         }
 
-        double dAng;                // Deze gaan we in andere methodes nodig hebben om de goede theta uit te rekenen die horen bij een [ia, ir] paar
+        double dAng;
         double dRad;
         Color[,] houghImage;
 
@@ -119,6 +119,23 @@ namespace INFOIBV
             dRad = (2.0 * rMax) / nRad;
             float[,] houghArray = new float[nAng,nRad];
 
+            double lowerBound = 0, upperBound = Math.PI;
+            try
+            {
+                lowerBound = int.Parse(textBox6.Text);
+                if (lowerBound < 0)
+                    lowerBound = 0;
+                lowerBound = lowerBound * Math.PI / 180;
+                upperBound = int.Parse(textBox1.Text);
+                if (upperBound > 180)
+                    upperBound = 180;
+                upperBound = upperBound * Math.PI / 180;
+            }
+            catch
+            {
+
+            }
+
             for (int v = 0; v < InputImage.Size.Height; v++)
             {
                 for (int u = 0; u < InputImage.Size.Width; u++)
@@ -131,10 +148,14 @@ namespace INFOIBV
                         for(int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
-                            int ir = cRad + (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);     // r zou niet afhankelijk moeten zijn van stapgrootte
-                            if (ir >= 0 && ir < nRad)
+                            if (theta >= lowerBound && theta <= upperBound)
                             {
-                                houghArray[ia, ir]+= EdgeDetection(u,v);
+                                int ir = cRad + (int)Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
+                                if (ir >= 0 && ir < nRad)
+                                {
+                                    houghArray[ia, ir] += 1;
+                                    //EdgeDetection(u,v);
+                                }
                             }
                         }
                     }
@@ -154,15 +175,16 @@ namespace INFOIBV
                         maxval = houghArray[x, y];
                 }
             }
-
-            if (maxval != 0)
-                for (int x = 0; x < houghImage.GetLength(0); x++)
-                    for (int y = 0; y < houghImage.GetLength(1); y++)
-                    {
-                        double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
-                        houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
-                        OutputImage.SetPixel(x, y, houghImage[x, y]);
-                    }            
+            
+            for (int x = 0; x < houghImage.GetLength(0); x++)
+                for (int y = 0; y < houghImage.GetLength(1); y++)
+                {
+                    double value = 0;
+                    if (maxval != 0)                    
+                        value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value                    
+                    houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
+                    OutputImage.SetPixel(x, y, houghImage[x, y]);
+                }            
 
             pictureBox3.Image = OutputImage;
 

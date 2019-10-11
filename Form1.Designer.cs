@@ -46,6 +46,7 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
+            this.textBox6 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -220,11 +221,21 @@
             this.textBox5.TabIndex = 17;
             this.textBox5.Visible = false;
             // 
+            // textBox6
+            // 
+            this.textBox6.Location = new System.Drawing.Point(711, 15);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox6.Name = "textBox6";
+            this.textBox6.Size = new System.Drawing.Size(59, 20);
+            this.textBox6.TabIndex = 18;
+            this.textBox6.Visible = false;
+            // 
             // INFOIBV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1052, 576);
+            this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comboBox2);
             this.Controls.Add(this.textBox5);
@@ -276,11 +287,17 @@
 
             if ((string)cb.SelectedItem == "Hough transform")
             {
+                this.textBox1.Visible = true;
+                this.textBox1.Text = "min theta (deg)";
+                this.textBox6.Visible = true;
+                this.textBox6.Text = "max theta (deg)";
                 this.pictureBox2.Visible = false;
                 this.pictureBox3.Visible = true;
             }
             else
             {
+                this.textBox1.Visible = false;
+                this.textBox6.Visible = false;
                 this.pictureBox3.Visible = false;
                 this.pictureBox2.Visible = true;
             }
@@ -325,6 +342,7 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox textBox6;
     }
 }
 

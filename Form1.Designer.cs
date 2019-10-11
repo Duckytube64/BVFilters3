@@ -288,9 +288,9 @@
             if ((string)cb.SelectedItem == "Hough transform")
             {
                 this.textBox1.Visible = true;
-                this.textBox1.Text = "min theta (deg)";
+                this.textBox1.Text = "max theta (deg)";
                 this.textBox6.Visible = true;
-                this.textBox6.Text = "max theta (deg)";
+                this.textBox6.Text = "min theta (deg)";
                 this.pictureBox2.Visible = false;
                 this.pictureBox3.Visible = true;
             }

@@ -84,9 +84,6 @@ namespace INFOIBV
                 case ("Hough line detection"):
                     HoughLineDectection();
                     break;
-                case ("Edge detection"):
-                    EdgeDetection();
-                    break;
                 case ("Nothing"):
                 default:
                     break;
@@ -120,7 +117,7 @@ namespace INFOIBV
             dAng = Math.PI / nAng;
             double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
             dRad = (2.0 * rMax) / nRad;
-            int[,] houghArray = new int[nAng,nRad];
+            float[,] houghArray = new float[nAng,nRad];
 
             for (int v = 0; v < InputImage.Size.Height; v++)
             {
@@ -136,7 +133,9 @@ namespace INFOIBV
                             double theta = dAng * ia;
                             int ir = cRad + (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);     // r zou niet afhankelijk moeten zijn van stapgrootte
                             if (ir >= 0 && ir < nRad)
-                                houghArray[ia, ir]++;
+                            {
+                                houghArray[ia, ir]+= EdgeDetection(u,v);
+                            }
                         }
                     }
                 }
@@ -156,15 +155,14 @@ namespace INFOIBV
                 }
             }
 
-            for (int x = 0; x < houghImage.GetLength(0); x++)
-            {
-                for (int y = 0; y < houghImage.GetLength(1); y++)
-                {
-                    double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
-                    houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);                    
-                    OutputImage.SetPixel(x, y, houghImage[x,y]);
-                }
-            }
+            if (maxval != 0)
+                for (int x = 0; x < houghImage.GetLength(0); x++)
+                    for (int y = 0; y < houghImage.GetLength(1); y++)
+                    {
+                        double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
+                        houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
+                        OutputImage.SetPixel(x, y, houghImage[x, y]);
+                    }            
 
             pictureBox3.Image = OutputImage;
 
@@ -361,58 +359,38 @@ namespace INFOIBV
             MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void EdgeDetection()
+        private float EdgeDetection(int x, int y)
         {
-            double normalisationFactor;
+            double normalisationFactor = 1f / 8f;
             double[,] edgeFilterX = GetEDFilter(comboBox2.Text + "x");
-            double[,] edgeFilterY = GetEDFilter(comboBox2.Text + "y");
-
-            switch (comboBox2.Text)
-            {
-                case ("Prewitt"):
-                    normalisationFactor = 1f / 6f;
-                    break;
-                case ("Sobel"):
-                    normalisationFactor = 1f / 8f;
-                    break;
-                default:
-                    normalisationFactor = 0f;
-                    break;
-            }
+            double[,] edgeFilterY = GetEDFilter(comboBox2.Text + "y");            
 
             Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int a = 0; a < InputImage.Size.Width; a++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int b = 0; b < InputImage.Size.Height; b++)
                 {
                     OriginalImage[x, y] = Image[x, y];
                 }
             }
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            double totalX = 0, totalY = 0;
+            for (int i = -1; i <= 1; i++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int j = -1; j <= 1; j++)
                 {
-                    double totalX = 0, totalY = 0;
-                    for (int i = -1; i <= 1; i++)
+                    if (x + i >= 0 && x + i < InputImage.Size.Width && y + j >= 0 && y + j < InputImage.Size.Height)
                     {
-                        for (int j = -1; j <= 1; j++)
-                        {
-                            if (x + i >= 0 && x + i < InputImage.Size.Width && y + j >= 0 && y + j < InputImage.Size.Height)
-                            {
-                                totalX += OriginalImage[x + i, y + j].R * edgeFilterX[i + 1, j + 1];
-                                totalY += OriginalImage[x + i, y + j].R * edgeFilterY[i + 1, j + 1];
-                            }
-                            // If the selected pixel is out of bounds, count that pixel value as 0, which does nothing
-                        }
+                        totalX += OriginalImage[x + i, y + j].R * edgeFilterX[i + 1, j + 1];
+                        totalY += OriginalImage[x + i, y + j].R * edgeFilterY[i + 1, j + 1];
                     }
-                    totalX *= normalisationFactor;
-                    totalY *= normalisationFactor;
-                    double EdgeStrength = Math.Sqrt(totalX * totalX + totalY * totalY);
-                    Image[x, y] = Color.FromArgb((int)EdgeStrength, (int)EdgeStrength, (int)EdgeStrength);
-                    progressBar.PerformStep();                              // Increment progress bar
+                    // If the selected pixel is out of bounds, count that pixel value as 0, which does nothing
                 }
             }
+            totalX *= normalisationFactor;
+            totalY *= normalisationFactor;
+            float d = (float)Math.Sqrt(totalX * totalX + totalY * totalY);
+            return d;
         }
 
         private void Thresholding(int percent)
@@ -459,26 +437,12 @@ namespace INFOIBV
         {
             switch (filterName)
             {
-                case ("Prewittx"):
-                    return new double[,]
-                    {
-                        { -1, 0, 1 },
-                        { -1, 0, 1 },
-                        { -1, 0, 1 }
-                    };
                 case ("Sobelx"):
                     return new double[,]
                     {
                         { -1, 0, 1 },
                         { -2, 0, 2 },
                         { -1, 0, 1 }
-                    };
-                case ("Prewitty"):
-                    return new double[,]
-                    {
-                        { -1, -1, -1 },
-                        { 0, 0, 0 },
-                        { 1, 1, 1 }
                     };
                 case ("Sobely"):
                     return new double[,]

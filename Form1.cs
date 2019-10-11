@@ -193,11 +193,11 @@ namespace INFOIBV
 
         private void HoughPeakFinder()
         {
-            int threshold;
+            float threshold;
 
             try
             {
-                threshold = int.Parse(textBox1.Text);
+                threshold = float.Parse(textBox1.Text);
             }
             catch
             {
@@ -418,7 +418,7 @@ namespace INFOIBV
             return d;
         }
 
-        private void Thresholding(int percent)
+        private void Thresholding(float percent)
         {
             percent = Math.Max(0, Math.Min(100, percent));              // Clamp threshold between 0 and 255              
             int totalPixels = 0;

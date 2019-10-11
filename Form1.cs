@@ -109,42 +109,61 @@ namespace INFOIBV
             progressBar.Visible = false;                                    // Hide progress bar
         }
 
+        double dAng;                // Deze gaan we in andere methodes nodig hebben om de goede theta uit te rekenen die horen bij een [ia, ir] paar
+
         private void HoughTransform()
         {
-            double thetaSize = 0.02;
-            float rMax = 1;
-            int diag = (int)Math.Sqrt(InputImage.Size.Width * InputImage.Size.Width + InputImage.Size.Height * InputImage.Size.Height);
-            float[,] accArray = new float[(int)Math.Ceiling(Math.PI / thetaSize), diag];
+            int xCtr = InputImage.Size.Width / 2;
+            int yCtr = InputImage.Size.Height / 2;
+            int nAng = 360;
+            int nRad = 360;         
+            int cRad = nRad / 2;
+            dAng = Math.PI / nAng;
+            double rMax = Math.Sqrt(xCtr * xCtr + yCtr * yCtr);
+            double dRad = (2.0 * rMax) / nRad;
+            int[,] houghArray = new int[nAng,nRad];
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int v = 0; v < InputImage.Size.Height; v++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int u = 0; u < InputImage.Size.Width; u++)
                 {
-                    if (Image[x, y].R != 255)
-                        for (double i = 0; i < (Math.PI * 100); i += (thetaSize * 100))
+                    if (Image[u,v].R < 255)
+                    {
+                        int x = u - xCtr;
+                        int y = v - yCtr;
+
+                        for(int ia = 0; ia < nAng; ia++)
                         {
-                            double r = x * Math.Cos((i / 100)) + y * Math.Sin((i / 100));
-                            double rest = r % rMax;
-                            if (rest < 0.5)
-                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r - rest))]++;
-                            else
-                                accArray[(int)(i / (thetaSize * 100)), Math.Abs((int)(r + (1 - rest)))]++;
+                            double theta = dAng * ia;
+                            int ir = cRad + (int) Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);     // r zou niet afhankelijk moeten zijn van stapgrootte
+                            if (ir >= 0 && ir < nRad)
+                                houghArray[ia, ir]++;
                         }
+                    }
                 }
             }
+            
+            Color[,] houghImage = new Color[houghArray.GetLength(0), houghArray.GetLength(1)];
+            OutputImage = new Bitmap(houghArray.GetLength(0), houghArray.GetLength(1));
 
-            Color[,] houghImage = new Color[accArray.GetLength(0), accArray.GetLength(1)];
-            OutputImage = new Bitmap(accArray.GetLength(0), accArray.GetLength(1));
+            double maxval = 0;
 
             for (int x = 0; x < houghImage.GetLength(0); x++)
             {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    int value = (int)(accArray[x, y]) * 10;
-                    if (value > 255)
-                        value = 255;
-                    houghImage[houghImage.GetLength(0) - x - 1, houghImage.GetLength(1) - y - 1] = Color.FromArgb(value, value, value);
-                    OutputImage.SetPixel(houghImage.GetLength(0) - x - 1, houghImage.GetLength(1) - y - 1, houghImage[houghImage.GetLength(0) - x - 1, houghImage.GetLength(1) - y - 1]);
+                    if (houghArray[x, y] > maxval)
+                        maxval = houghArray[x, y];
+                }
+            }
+
+            for (int x = 0; x < houghImage.GetLength(0); x++)
+            {
+                for (int y = 0; y < houghImage.GetLength(1); y++)
+                {
+                    double value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value
+                    houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
+                    OutputImage.SetPixel(x, y, houghImage[x, y]);
                 }
             }
 
@@ -215,6 +234,7 @@ namespace INFOIBV
             Thresholding();
 
             string message = "R/Theta-pairs: \n";
+            bool second = false;
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
@@ -222,7 +242,16 @@ namespace INFOIBV
                 {
                     if (Image[x, y].R > 0)
                     {
-                        message += "(" + x + ", " + y + ")\n";
+                        if (!second)
+                        {
+                            message += "(" + y + ", " + x + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
+                            second = true;
+                        }
+                        else
+                        {
+                            message += "(" + y + ", " + x + "),\n";
+                            second = false;
+                        }
                     }
                 }
             }
@@ -247,7 +276,8 @@ namespace INFOIBV
             {
                 return;
             }
-            Vector v = new Vector(Math.Cos(theta / 100), Math.Sin(theta / 100));
+
+            Vector v = new Vector(Math.Cos(theta * dAng), Math.Sin(theta * dAng));
             v.Normalize();
             Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
             Vector lineFormula = new Vector(v.Y, v.X);
@@ -256,17 +286,15 @@ namespace INFOIBV
             Vector[] linePair = new Vector[2];
             bool makingLine = false, onGap = false;
             int gapCount = 0, lengthCount = 0;
-            Vector startGap = new Vector(0,0);
+            Vector lastOnLine = new Vector(0,0);
 
             for (int x = 0; x < InputImage.Size.Width; x++)
             {
                 for (int y = 0; y < InputImage.Size.Height; y++)
                 {
-                    double xFactor = (x - intersectionPoint.X) / lineFormula.X;
-                    double yFactor = (y - intersectionPoint.Y) / lineFormula.Y;
-                    Vector linePointX = intersectionPoint + xFactor * lineFormula; // Get the position of the line at the same x value
-                    Vector linePointY = intersectionPoint + yFactor * lineFormula; // Get the position of the line at the same y value
-                    if (Math.Abs(y - linePointX.Y) < 1 || Math.Abs(x - linePointY.X) < 1)  // If linePoint's y is 'within' the pixel's y or within the pixel's x
+                    double factor = (x - intersectionPoint.X) / lineFormula.X;
+                    Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
+                    if (lineFormula.X == 0 && (int)intersectionPoint.X == x || Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
                     {
                         if (Image[x, y].R <= minIntensity)
                         {
@@ -283,28 +311,37 @@ namespace INFOIBV
                             onGap = false;
                             lengthCount++;
                             inLine[x, y] = true;
+                            lastOnLine = new Vector(x, y);
                         }
                         else if (gapCount < maxGap && makingLine)
                         {
                             gapCount++;
                             lengthCount++;
                             if (!onGap)
-                                startGap = linePair[1];
+                                lastOnLine = linePair[1];
                             linePair[1] = new Vector(x, y);
                             inLine[x, y] = true;
                             onGap = true;
                         }
                         /*!!!*/
-                        else if (gapCount >= maxGap || (x == InputImage.Size.Width - 1 || y == InputImage.Size.Height - 1 && makingLine))   // Add line pair to list if line ends or we've arrived at the opposite border of the image
+                        else if (gapCount >= maxGap)   // Add line pair to list if line ends or we've arrived at the opposite border of the image
                         {
-                            if (gapCount >= maxGap)
-                                linePair[1] = startGap;
+                            linePair[1] = lastOnLine;
                             if (lengthCount >= minLength)
+                            {
                                 linePairList.Add(linePair);
+                                linePair = new Vector[2];
+                            }
                             makingLine = false;
                             gapCount = 0;
                             lengthCount = 0;
                         }
+                    }
+                    else if (x == InputImage.Size.Width - 1 && y == InputImage.Size.Height - 1 && makingLine)
+                    {
+                        linePair[1] = lastOnLine;
+                        if (lengthCount >= minLength)
+                            linePairList.Add(linePair);
                     }
                 }
             }

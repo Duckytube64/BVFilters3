@@ -141,7 +141,7 @@ namespace INFOIBV
                     if (Image[u,v].R < 255)        // Hier ging het fout, was eerst <= 255, gingen dus ook witte pixels mee
                     {                              // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen: alleen uiterste pixels v/d lijn worden krijgen dan edgestrength >0
                         int x = u - xCtr;          // Maakt gelukkig niet uit: volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen) en daar werkt transform prima!
-                        int y = v - yCtr;
+                        int y = v - yCtr;          // Jammergenoeg werkt de line detection hier niet al te goed mee...
                         float edgeStrength = EdgeDetection(u, v);
                         for (int ia = 0; ia < nAng; ia++)
                         {

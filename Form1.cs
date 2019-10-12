@@ -138,12 +138,12 @@ namespace INFOIBV
             {
                 for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R <= 255)        // Het gaat hier fout, moet < 255 zijn ipv <= 255, maar dan krijg je alleen nog uitlijn van uiterste r waardes
+                    if (Image[u,v].R < 255)        // Het gaat hier fout, moet < 255 zijn ipv <= 255, maar dan krijg je alleen nog uitlijn van uiterste r waardes
                     {
                         int x = u - xCtr;
                         int y = v - yCtr;
-
-                        for(int ia = 0; ia < nAng; ia++)
+                        float edgeStrength = EdgeDetection(u, v);
+                        for (int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
                             if (theta >= lowerBound && theta <= upperBound)
@@ -151,7 +151,7 @@ namespace INFOIBV
                                 int ir = cRad + (int)Math.Ceiling((x * Math.Cos(theta) + y * Math.Sin(theta)) / dRad);
                                 if (ir >= 0 && ir < nRad)
                                 {
-                                    houghArray[ia, ir] += EdgeDetection(u, v);
+                                    houghArray[ia, ir] += edgeStrength;
                                 }
                             }
                         }
@@ -169,8 +169,8 @@ namespace INFOIBV
             {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    if (houghArray[x, y] >= maxval)
-                        maxval = houghArray[x, y];
+                    if (houghArray[x, y] > maxval)
+                        maxval = houghArray[x, y];      // per theta stap zijn maar twee waardes > 0 als je boven dus < 255 ipv <= 255 doet
                 }
             }
 

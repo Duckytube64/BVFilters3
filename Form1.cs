@@ -54,14 +54,14 @@ namespace INFOIBV
             // Setup progress bar
             progressBar.Visible = true;
             progressBar.Minimum = 1;
-            progressBar.Maximum = InputImage.Size.Width * InputImage.Size.Height;
+            progressBar.Maximum = Image.GetLength(0) * Image.GetLength(1);
             progressBar.Value = 1;
             progressBar.Step = 1;
 
             // Copy input Bitmap to array            
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     Image[x, y] = InputImage.GetPixel(x, y);                // Set pixel color in array at (x,y)
                 }
@@ -91,9 +91,9 @@ namespace INFOIBV
             //==========================================================================================
 
             // Copy array to output Bitmap
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     OutputImage.SetPixel(x, y, Image[x, y]);               // Set the pixel color at coordinate (x,y)
                 }
@@ -109,8 +109,8 @@ namespace INFOIBV
 
         private void HoughTransform()
         {
-            int xCtr = InputImage.Size.Width / 2;
-            int yCtr = InputImage.Size.Height / 2;
+            int xCtr = Image.GetLength(0) / 2;
+            int yCtr = Image.GetLength(1) / 2;
             int nAng = 360;
             int nRad = 360;         
             int cRad = nRad / 2;
@@ -132,15 +132,13 @@ namespace INFOIBV
                 upperBound = upperBound * Math.PI / 180;
             }
             catch
-            {
+            { }
 
-            }
-
-            for (int v = 0; v < InputImage.Size.Height; v++)
+            for (int v = 0; v < Image.GetLength(1); v++)
             {
-                for (int u = 0; u < InputImage.Size.Width; u++)
+                for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R <= 255)
+                    if (Image[u,v].R <= 255)        // Het gaat hier fout, moet < 255 zijn ipv <= 255, maar dan krijg je alleen nog uitlijn van uiterste r waardes
                     {
                         int x = u - xCtr;
                         int y = v - yCtr;
@@ -171,11 +169,13 @@ namespace INFOIBV
             {
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
-                    if (houghArray[x, y] > maxval)
+                    if (houghArray[x, y] >= maxval)
                         maxval = houghArray[x, y];
                 }
             }
-            
+
+            Color[,] higherBrightnessCopy = houghImage;
+
             for (int x = 0; x < houghImage.GetLength(0); x++)
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
@@ -183,12 +183,14 @@ namespace INFOIBV
                     if (maxval != 0)                    
                         value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value                    
                     houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
-                    OutputImage.SetPixel(x, y, houghImage[x, y]);
+                    value = Math.Min(value + 10, 255);
+                    higherBrightnessCopy[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
+                    OutputImage.SetPixel(x, y, higherBrightnessCopy[x,y]);
                 }            
 
             pictureBox3.Image = OutputImage;
 
-            OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height);
+            OutputImage = new Bitmap(Image.GetLength(0), Image.GetLength(1));
         }
 
         private void HoughPeakFinder()
@@ -204,18 +206,18 @@ namespace INFOIBV
                 return;
             }
 
-            Color[,] OriginalImage = new Color[InputImage.Size.Width, InputImage.Size.Height];   // Duplicate the original image
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            Color[,] OriginalImage = new Color[Image.GetLength(0), Image.GetLength(1)];   // Duplicate the original image
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     OriginalImage[x, y] = Image[x, y];
                 }
             }
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     if (x > 0)
                     {
@@ -224,7 +226,7 @@ namespace INFOIBV
                             OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
-                    if (x < InputImage.Size.Width - 1)
+                    if (x < Image.GetLength(0) - 1)
                     {
                         if (Image[x, y].R < Image[x + 1, y].R)
                         {
@@ -238,7 +240,7 @@ namespace INFOIBV
                             OriginalImage[x, y] = Color.FromArgb(0, 0, 0);
                         }
                     }
-                    if (y < InputImage.Size.Height - 1)
+                    if (y < Image.GetLength(1) - 1)
                     {
                         if (Image[x, y].R < Image[x, y + 1].R)
                         {
@@ -255,22 +257,27 @@ namespace INFOIBV
             string message = "R/Theta-pairs: \n";
             bool second = false;
             List<Vector> rThetaPairs = new List<Vector>();
+            Dictionary<Vector, int> checkIfDouble = new Dictionary<Vector, int>();
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     if (Image[x, y].R > 0)
                     {
                         int valx = (int)((x * dAng) * 180 / Math.PI);
                         int valy = (int)Math.Abs((y - 180) * dRad);
-                        rThetaPairs.Add(new Vector(valy, valx));
+                        if (!checkIfDouble.ContainsKey(new Vector(valx, valy)))
+                        {
+                            rThetaPairs.Add(new Vector(valy, valx));
+                            checkIfDouble.Add(new Vector(valx, valy), 1);
+                        }
                     }
                     progressBar.PerformStep();                              // Increment progress bar
                 }
             }
 
-            foreach(Vector rTheta in rThetaPairs.Distinct())
+            foreach(Vector rTheta in rThetaPairs)
             {
                 if (!second)
                 {
@@ -296,6 +303,7 @@ namespace INFOIBV
             {
                 r = double.Parse(textBox2.Text.Split(' ')[0]);
                 theta = double.Parse(textBox2.Text.Split(' ')[1]);
+                theta = theta / 180 * Math.PI;
                 minIntensity = int.Parse(textBox3.Text);
                 minLength = int.Parse(textBox4.Text);
                 maxGap = int.Parse(textBox5.Text);
@@ -305,7 +313,7 @@ namespace INFOIBV
                 return;
             }
 
-            Vector v = new Vector(Math.Cos(theta * dAng), Math.Sin(theta * dAng));
+            Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
             v.Normalize();
             Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
             Vector lineFormula = new Vector(v.Y, v.X);
@@ -316,9 +324,9 @@ namespace INFOIBV
             int gapCount = 0, lengthCount = 0;
             Vector lastOnLine = new Vector(0,0);
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     double factor = (x - intersectionPoint.X) / lineFormula.X;
                     Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
@@ -365,7 +373,7 @@ namespace INFOIBV
                             lengthCount = 0;
                         }
                     }
-                    else if (x == InputImage.Size.Width - 1 && y == InputImage.Size.Height - 1 && makingLine)
+                    else if (x == Image.GetLength(0) - 1 && y == Image.GetLength(1) - 1 && makingLine)
                     {
                         linePair[1] = lastOnLine;
                         if (lengthCount >= minLength)
@@ -405,7 +413,7 @@ namespace INFOIBV
         {
             double normalisationFactor = 1f / 8f;
             double totalX = 0, totalY = 0;
-            int width = InputImage.Size.Width, height = InputImage.Size.Height;
+            int width = Image.GetLength(0), height = Image.GetLength(1);
             for (int i = -1; i <= 1; i++)
             {
                 for (int j = -1; j <= 1; j++)
@@ -429,14 +437,18 @@ namespace INFOIBV
             percent = Math.Max(0, Math.Min(100, percent));              // Clamp threshold between 0 and 255              
             int totalPixels = 0;
             int[] histogram = new int[256];
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     if (houghImage[x, y].R > 0)
                     {
                         totalPixels++;
                         histogram[houghImage[x, y].R]++;
+                    }
+                    else
+                    {
+
                     }
                 }
             }
@@ -454,9 +466,9 @@ namespace INFOIBV
                 }
             }
 
-            for (int x = 0; x < InputImage.Size.Width; x++)
+            for (int x = 0; x < Image.GetLength(0); x++)
             {
-                for (int y = 0; y < InputImage.Size.Height; y++)
+                for (int y = 0; y < Image.GetLength(1); y++)
                 {
                     if (Image[x, y].R < threshold)                          // Set color to black if grayscale (thus either R, G or B) is above threshold, else make the color white
                         Image[x, y] = Color.Black;

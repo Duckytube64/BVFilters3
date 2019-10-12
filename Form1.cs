@@ -138,9 +138,9 @@ namespace INFOIBV
             {
                 for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R < 255)        // Het gaat hier fout, moet < 255 zijn ipv <= 255, maar dan krijg je alleen nog uitlijn van uiterste r waardes
-                    {
-                        int x = u - xCtr;
+                    if (Image[u,v].R < 255)        // Hier ging het fout, was eerst <= 255, gingen dus ook witte pixels mee
+                    {                              // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen: alleen uiterste pixels v/d lijn worden krijgen dan edgestrength >0
+                        int x = u - xCtr;          // Maakt gelukkig niet uit: volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen) en daar werkt transform prima!
                         int y = v - yCtr;
                         float edgeStrength = EdgeDetection(u, v);
                         for (int ia = 0; ia < nAng; ia++)
@@ -170,8 +170,8 @@ namespace INFOIBV
                 for (int y = 0; y < houghImage.GetLength(1); y++)
                 {
                     if (houghArray[x, y] > maxval)
-                        maxval = houghArray[x, y];      // per theta stap zijn maar twee waardes > 0 als je boven dus < 255 ipv <= 255 doet
-                }
+                        maxval = houghArray[x, y];
+                }                                       
             }
 
             Color[,] higherBrightnessCopy = houghImage;

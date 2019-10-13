@@ -98,6 +98,7 @@ namespace INFOIBV
                     }
                     if (useIntermediateOutput)
                     {
+                        segments.Clear();
                         foreach(Vector v in rThetaPairs)
                         {
                             HoughLineDectection(v.X, v.Y, minIntensity, minLength, maxGap);

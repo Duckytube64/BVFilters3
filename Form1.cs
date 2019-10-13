@@ -415,7 +415,51 @@ namespace INFOIBV
             }
 
             MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }       
+        }
+        
+        private void HoughVisualization()
+        {
+            List<Vector[]> linesegements = new List<Vector[]>();
+            string[] all;
+
+            try
+            {
+                all = textBox7.Text.Split('\n');
+                
+            }
+            catch
+            {
+                return;
+            }
+
+            foreach (string x in all)
+            {
+                string[] coordinates = x.Split(' ');
+                Vector[] points = new Vector[2];
+                points[0] = new Vector(double.Parse(coordinates[0]), double.Parse(coordinates[1]));
+                points[1] = new Vector(double.Parse(coordinates[2]), double.Parse(coordinates[3]));
+                linesegements.Add(points);
+
+            }
+
+            Pen redPen = new Pen(Color.Red, 1);
+
+            foreach (Vector[] vectors in linesegements)
+            {
+                using (var graphics = Graphics.FromImage(InputImage))
+                {
+                    graphics.DrawLine(redPen, (float) vectors[0].X, (float) vectors[0].Y, (float) vectors[1].X, (float) vectors[1].Y);
+                }
+            }
+
+            for (int x = 0; x < Image.GetLength(0); x++)
+            {
+                for (int y = 0; y < Image.GetLength(1); y++)
+                {
+                    Image[x, y] = InputImage.GetPixel(x, y);
+                }
+            }
+        }
 
         // Initialising arrays seems to take a lot of time. Since we never change these arrays, we might as well define them once instead of each time the method below is called upon.
         int[,] edgeFilterX = new int[,]

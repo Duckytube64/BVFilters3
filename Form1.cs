@@ -138,10 +138,10 @@ namespace INFOIBV
             {
                 for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R < 255)        // Hier ging het fout, was eerst <= 255, gingen dus ook witte pixels mee
-                    {                              // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen: alleen uiterste pixels v/d lijn worden krijgen dan edgestrength >0
-                        int x = u - xCtr;          // Maakt gelukkig niet uit: volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen) en daar werkt transform prima!
-                        int y = v - yCtr;          // Jammergenoeg werkt de line detection hier niet al te goed mee...
+                    if (Image[u,v].R > 0)           // Hier ging het fout, was eerst <= 255, gingen dus ook witte pixels mee
+                    {                               // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen: alleen uiterste pixels v/d lijn krijgen dan edgestrength >0
+                        int x = u - xCtr;           // Maakt gelukkig niet uit: volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen)
+                        int y = v - yCtr;           // Jammergenoeg geeft de transform blijkbaar verkeerde waardes (voornamelijk is r fout), de edge detection werkt prima als er goede waardes ingevuld worden
                         float edgeStrength = EdgeDetection(u, v);
                         for (int ia = 0; ia < nAng; ia++)
                         {
@@ -184,8 +184,8 @@ namespace INFOIBV
                         value = ((houghArray[x, y] / maxval) * 255);      // Brightness is scaled to be a percentage of the largest value                    
                     houghImage[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
                     value = Math.Min(value + 10, 255);
-                    higherBrightnessCopy[x, y] = Color.FromArgb((int)value, (int)value, (int)value);
-                    OutputImage.SetPixel(x, y, higherBrightnessCopy[x,y]);
+                    higherBrightnessCopy[x, y] = Color.FromArgb((int)value, (int)value, (int)value);    // After scaling, most values become nearly invisible, 
+                    OutputImage.SetPixel(x, y, higherBrightnessCopy[x,y]);                              // so we add a flat amount to all of them to keep the diagram readable
                 }            
 
             pictureBox3.Image = OutputImage;
@@ -332,22 +332,25 @@ namespace INFOIBV
                     Vector linePoint = intersectionPoint + factor * lineFormula; // Get the position of the line at the same x value
                     if (lineFormula.X == 0 && (int)intersectionPoint.X == x || Math.Abs(y - linePoint.Y) < 1)  // If linePoint's y is 'within' the pixels y
                     {
-                        if (Image[x, y].R <= minIntensity)
+                        if (Image[x, y].R >= minIntensity)
                         {
-                            if (makingLine)
+                            if (x != 0 && x < Image.GetLength(0) - 1 && y != 0 && y < Image.GetLength(1) - 1)
                             {
-                                linePair[1] = new Vector(x, y);
+                                if (makingLine)
+                                {
+                                    linePair[1] = new Vector(x, y);
+                                }
+                                else if (!inLine[x, y])
+                                {
+                                    linePair[0] = new Vector(x, y);
+                                    makingLine = true;
+                                }
+                                gapCount = 0;
+                                onGap = false;
+                                lengthCount++;
+                                inLine[x, y] = true;
+                                lastOnLine = new Vector(x, y);
                             }
-                            else if (!inLine[x, y])
-                            {
-                                linePair[0] = new Vector(x, y);
-                                makingLine = true;
-                            }
-                            gapCount = 0;
-                            onGap = false;
-                            lengthCount++;
-                            inLine[x, y] = true;
-                            lastOnLine = new Vector(x, y);
                         }
                         else if (gapCount < maxGap && makingLine)
                         {
@@ -428,8 +431,7 @@ namespace INFOIBV
             }
             totalX *= normalisationFactor;
             totalY *= normalisationFactor;
-            float d = (float)Math.Sqrt(totalX * totalX + totalY * totalY);
-            return d;
+            return (float)Math.Sqrt(totalX * totalX + totalY * totalY);
         }
 
         private void Thresholding(float percent)

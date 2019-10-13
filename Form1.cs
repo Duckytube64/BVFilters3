@@ -177,7 +177,7 @@ namespace INFOIBV
             {
                 for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R > 0)           
+                    if (Image[u,v].R >= 0)           
                     {                               
                         int x = u - xCtr;           
                         int y = v - yCtr;           

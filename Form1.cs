@@ -314,9 +314,8 @@ namespace INFOIBV
             }
 
             Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
-            v.Normalize();
             Vector intersectionPoint = new Vector(v.X * r + Image.GetLength(0) / 2, v.Y * r + Image.GetLength(1) / 2);      // The algorithm starts from the centre of the image
-            Vector lineFormula = new Vector(v.Y, v.X);
+            Vector lineFormula = new Vector(v.Y, -v.X);
             List<Vector[]> linePairList = new List<Vector[]>();
             bool[,] inLine = new bool[Image.GetLength(0), Image.GetLength(1)];      // Any coordinate marked true is already part of the line and thus being counted double. When this is the case the pixel will be ignored
             Vector[] linePair = new Vector[2];

@@ -138,11 +138,11 @@ namespace INFOIBV
             {
                 for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R > 0)           // Hier ging het fout, was eerst <= 255, gingen dus ook witte pixels mee
-                    {                               // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen: alleen uiterste pixels v/d lijn krijgen dan edgestrength >0
-                        int x = u - xCtr;           // Maakt gelukkig niet uit: volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen)
+                    if (Image[u,v].R > 0)           // Hier gaat het fout, voor zowel > 0 en >= 0
+                    {                               // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen
+                        int x = u - xCtr;           // Volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen), hiervoor gedraagt de code zich wel anders
                         int y = v - yCtr;           // Jammergenoeg geeft de transform blijkbaar verkeerde waardes (voornamelijk is r fout), de edge detection werkt prima als er goede waardes ingevuld worden
-                        float edgeStrength = EdgeDetection(u, v);
+                        float edgeStrength = EdgeDetection(u, v);       // Transform of line detection heeft nog moeite met schuine lijnen
                         for (int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;
@@ -265,12 +265,12 @@ namespace INFOIBV
                 {
                     if (Image[x, y].R > 0)
                     {
-                        int valx = (int)((x * dAng) * 180 / Math.PI);
-                        int valy = (int)Math.Abs((y - 180) * dRad);
-                        if (!checkIfDouble.ContainsKey(new Vector(valx, valy)))
+                        int theta = (int)((x * dAng) * 180 / Math.PI);
+                        int r = (int)((y - 180) * dRad);
+                        if (!checkIfDouble.ContainsKey(new Vector(r, theta)))     // Make sure no duplicate values are displayed
                         {
-                            rThetaPairs.Add(new Vector(valy, valx));
-                            checkIfDouble.Add(new Vector(valx, valy), 1);
+                            rThetaPairs.Add(new Vector(r, theta));
+                            checkIfDouble.Add(new Vector(r, theta), 1);
                         }
                     }
                     progressBar.PerformStep();                              // Increment progress bar
@@ -281,7 +281,7 @@ namespace INFOIBV
             {
                 if (!second)
                 {
-                    message += "(" + rTheta.X + ", " + rTheta.Y + "), ";  // X is theta here, so for a R/Theta pair we use y, then x
+                    message += "(" + rTheta.X + ", " + rTheta.Y + "), ";
                     second = true;
                 }
                 else
@@ -315,7 +315,7 @@ namespace INFOIBV
 
             Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
             v.Normalize();
-            Vector intersectionPoint = new Vector(v.X * r, v.Y * r);
+            Vector intersectionPoint = new Vector(v.X * r + Image.GetLength(0) / 2, v.Y * r + Image.GetLength(1) / 2);      // The algorithm starts from the centre of the image
             Vector lineFormula = new Vector(v.Y, v.X);
             List<Vector[]> linePairList = new List<Vector[]>();
             bool[,] inLine = new bool[Image.GetLength(0), Image.GetLength(1)];      // Any coordinate marked true is already part of the line and thus being counted double. When this is the case the pixel will be ignored

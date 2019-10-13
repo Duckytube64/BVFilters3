@@ -48,6 +48,7 @@
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
             this.textBox7 = new System.Windows.Forms.TextBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -56,7 +57,7 @@
             // LoadImageButton
             // 
             this.LoadImageButton.Location = new System.Drawing.Point(16, 15);
-            this.LoadImageButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.LoadImageButton.Margin = new System.Windows.Forms.Padding(4);
             this.LoadImageButton.Name = "LoadImageButton";
             this.LoadImageButton.Size = new System.Drawing.Size(131, 28);
             this.LoadImageButton.TabIndex = 0;
@@ -73,7 +74,7 @@
             // imageFileName
             // 
             this.imageFileName.Location = new System.Drawing.Point(155, 17);
-            this.imageFileName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.imageFileName.Margin = new System.Windows.Forms.Padding(4);
             this.imageFileName.Name = "imageFileName";
             this.imageFileName.ReadOnly = true;
             this.imageFileName.Size = new System.Drawing.Size(275, 22);
@@ -82,7 +83,7 @@
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(17, 55);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(683, 630);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -92,7 +93,7 @@
             // applyButton
             // 
             this.applyButton.Location = new System.Drawing.Point(563, 16);
-            this.applyButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.applyButton.Margin = new System.Windows.Forms.Padding(4);
             this.applyButton.Name = "applyButton";
             this.applyButton.Size = new System.Drawing.Size(137, 28);
             this.applyButton.TabIndex = 3;
@@ -108,7 +109,7 @@
             // saveButton
             // 
             this.saveButton.Location = new System.Drawing.Point(1276, 0);
-            this.saveButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.saveButton.Margin = new System.Windows.Forms.Padding(4);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(127, 28);
             this.saveButton.TabIndex = 4;
@@ -119,7 +120,7 @@
             // pictureBox2
             // 
             this.pictureBox2.Location = new System.Drawing.Point(708, 55);
-            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox2.Name = "pictureBox2";
             this.pictureBox2.Size = new System.Drawing.Size(683, 630);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -129,7 +130,7 @@
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(708, 18);
-            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4);
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(233, 25);
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
@@ -144,7 +145,7 @@
             "Hough transform",
             "Hough peak finder",
             "Hough line detection",
-            "Hough visualization"});
+            "Hough visualisation"});
             this.comboBox1.Location = new System.Drawing.Point(1121, 17);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBox1.Name = "comboBox1";
@@ -165,7 +166,7 @@
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(1292, 27);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 28);
             this.button1.TabIndex = 11;
@@ -191,7 +192,7 @@
             // pictureBox3
             // 
             this.pictureBox3.Location = new System.Drawing.Point(708, 55);
-            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4);
             this.pictureBox3.Name = "pictureBox3";
             this.pictureBox3.Size = new System.Drawing.Size(683, 630);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
@@ -201,7 +202,7 @@
             // textBox2
             // 
             this.textBox2.Location = new System.Drawing.Point(981, 4);
-            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4);
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new System.Drawing.Size(132, 22);
             this.textBox2.TabIndex = 14;
@@ -210,7 +211,7 @@
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(981, 34);
-            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4);
             this.textBox3.Name = "textBox3";
             this.textBox3.Size = new System.Drawing.Size(132, 22);
             this.textBox3.TabIndex = 15;
@@ -219,7 +220,7 @@
             // textBox4
             // 
             this.textBox4.Location = new System.Drawing.Point(981, 66);
-            this.textBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(132, 22);
             this.textBox4.TabIndex = 16;
@@ -228,7 +229,7 @@
             // textBox5
             // 
             this.textBox5.Location = new System.Drawing.Point(981, 98);
-            this.textBox5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(4);
             this.textBox5.Name = "textBox5";
             this.textBox5.Size = new System.Drawing.Size(132, 22);
             this.textBox5.TabIndex = 17;
@@ -246,7 +247,7 @@
             // textBox7
             // 
             this.textBox7.Location = new System.Drawing.Point(981, 4);
-            this.textBox7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textBox7.Margin = new System.Windows.Forms.Padding(4);
             this.textBox7.Multiline = true;
             this.textBox7.Name = "textBox7";
             this.textBox7.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -254,11 +255,23 @@
             this.textBox7.TabIndex = 19;
             this.textBox7.Visible = false;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(1121, 46);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(132, 21);
+            this.checkBox1.TabIndex = 20;
+            this.checkBox1.Text = "Use peak points";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // INFOIBV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1403, 709);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.textBox7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox1);
@@ -278,7 +291,7 @@
             this.Controls.Add(this.imageFileName);
             this.Controls.Add(this.LoadImageButton);
             this.Location = new System.Drawing.Point(10, 10);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "INFOIBV";
             this.ShowIcon = false;
             this.Text = "INFOIBV";
@@ -311,7 +324,7 @@
                 this.pictureBox2.Visible = true;
             }
 
-            if ((string)cb.SelectedItem == "Hough visualization")
+            if ((string)cb.SelectedItem == "Hough visualisation")
             {
                 this.textBox7.Visible = true;
                 this.textBox7.Text = "Line segments";
@@ -373,6 +386,7 @@
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.TextBox textBox6;
         private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }
 

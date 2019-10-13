@@ -119,6 +119,9 @@ namespace INFOIBV
                         HoughLineDectection(r, theta, minIntensity, minLength, maxGap);
                     }
                     break;
+                case ("Hough visualisation"):
+                    HoughVisualisation();
+                    break;
                 case ("Nothing"):
                 default:
                     break;
@@ -173,10 +176,10 @@ namespace INFOIBV
             {
                 for (int u = 0; u < Image.GetLength(0); u++)
                 {
-                    if (Image[u,v].R > 0)           // Hier gaat het fout, voor zowel > 0 en >= 0
-                    {                               // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen
-                        int x = u - xCtr;           // Volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen), hiervoor gedraagt de code zich wel anders
-                        int y = v - yCtr;           // Transform of line detection heeft nog moeite met schuine lijnen
+                    if (Image[u,v].R > 0)           
+                    {                               
+                        int x = u - xCtr;           
+                        int y = v - yCtr;           
                         float edgeStrength = EdgeDetection(u, v);       
                         for (int ia = 0; ia < nAng; ia++)
                         {
@@ -230,6 +233,7 @@ namespace INFOIBV
 
         private void HoughPeakFinder()
         {
+            rThetaPairs.Clear();
             float threshold;
 
             try
@@ -413,34 +417,43 @@ namespace INFOIBV
                 segments.Add(newPair);
                 message += "Line segment " + (i + 1) + ": (" + v1.X + ", " + v1.Y + "), (" + v2.X + ", " + v2.Y + ")\n";
             }
-
-            MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            if (!useIntermediateOutput)
+                MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         
-        private void HoughVisualization()
+        private void HoughVisualisation()
         {
             List<Vector[]> linesegements = new List<Vector[]>();
-            string[] all;
 
-            try
+            if (useIntermediateOutput)
             {
+                foreach (Vector[] v in segments)
+                {
+                    linesegements.Add(v);
+                }
+            }
+            else
+            {
+                string[] all;
                 all = textBox7.Text.Split('\n');
-                
-            }
-            catch
-            {
-                return;
+
+                foreach (string x in all)
+                {
+                    string[] coordinates = x.Split(' ');
+                    Vector[] points = new Vector[2];
+                    try
+                    {
+                        points[0] = new Vector(double.Parse(coordinates[0]), double.Parse(coordinates[1]));
+                        points[1] = new Vector(double.Parse(coordinates[2]), double.Parse(coordinates[3]));
+                    }
+                    catch
+                    {
+                        return;
+                    }
+                    linesegements.Add(points);
+                }
             }
 
-            foreach (string x in all)
-            {
-                string[] coordinates = x.Split(' ');
-                Vector[] points = new Vector[2];
-                points[0] = new Vector(double.Parse(coordinates[0]), double.Parse(coordinates[1]));
-                points[1] = new Vector(double.Parse(coordinates[2]), double.Parse(coordinates[3]));
-                linesegements.Add(points);
-
-            }
 
             Pen redPen = new Pen(Color.Red, 1);
 
@@ -559,6 +572,11 @@ namespace INFOIBV
             if (OutputImage == null) return;                                // Get out if no output image
             pictureBox1.Image = pictureBox2.Image;
             InputImage = new Bitmap(pictureBox2.Image);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            useIntermediateOutput = !useIntermediateOutput;
         }
     }
 }

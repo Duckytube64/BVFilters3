@@ -47,6 +47,7 @@
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.textBox5 = new System.Windows.Forms.TextBox();
             this.textBox6 = new System.Windows.Forms.TextBox();
+            this.textBox7 = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -135,7 +136,8 @@
             "Nothing",
             "Hough transform",
             "Hough peak finder",
-            "Hough line detection"});
+            "Hough line detection",
+            "Hough visualization"});
             this.comboBox1.Location = new System.Drawing.Point(841, 14);
             this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
@@ -228,11 +230,22 @@
             this.textBox6.TabIndex = 18;
             this.textBox6.Visible = false;
             // 
+            // textBox7
+            // 
+            this.textBox7.Location = new System.Drawing.Point(736, 3);
+            this.textBox7.Multiline = true;
+            this.textBox7.Name = "textBox7";
+            this.textBox7.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox7.Size = new System.Drawing.Size(100, 97);
+            this.textBox7.TabIndex = 19;
+            this.textBox7.Visible = false;
+            // 
             // INFOIBV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1052, 576);
+            this.Controls.Add(this.textBox7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.comboBox2);
@@ -281,6 +294,16 @@
                 this.textBox6.Visible = false;
                 this.pictureBox3.Visible = false;
                 this.pictureBox2.Visible = true;
+            }
+
+            if ((string)cb.SelectedItem == "Hough visualization")
+            {
+                this.textBox7.Visible = true;
+                this.textBox7.Text = "Line segments";
+            }
+            else
+            {
+                this.textBox7.Visible = false;
             }
 
             if ((string)cb.SelectedItem == "Hough peak finder")
@@ -334,6 +357,7 @@
         private System.Windows.Forms.TextBox textBox4;
         private System.Windows.Forms.TextBox textBox5;
         private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox textBox7;
     }
 }
 

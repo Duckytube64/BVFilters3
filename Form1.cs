@@ -141,8 +141,8 @@ namespace INFOIBV
                     if (Image[u,v].R > 0)           // Hier gaat het fout, voor zowel > 0 en >= 0
                     {                               // Ziet er nu wel raar uit met plaatjes van alleen zwarte lijnen
                         int x = u - xCtr;           // Volgens de opdracht krijgen we alleen edge images (zwart plaatje met witte lijnen), hiervoor gedraagt de code zich wel anders
-                        int y = v - yCtr;           // Jammergenoeg geeft de transform blijkbaar verkeerde waardes (voornamelijk is r fout), de edge detection werkt prima als er goede waardes ingevuld worden
-                        float edgeStrength = EdgeDetection(u, v);       // Transform of line detection heeft nog moeite met schuine lijnen
+                        int y = v - yCtr;           // Transform of line detection heeft nog moeite met schuine lijnen
+                        float edgeStrength = EdgeDetection(u, v);       
                         for (int ia = 0; ia < nAng; ia++)
                         {
                             double theta = dAng * ia;

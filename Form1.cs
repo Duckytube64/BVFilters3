@@ -389,6 +389,9 @@ namespace INFOIBV
                             linePair[1] = lastOnLine;
                             if (lengthCount >= minLength)
                             {
+                                Vector zero = new Vector(0, 0);
+                                if (linePair[0] != zero && linePair[1] == zero)
+                                    linePair[1] = lastOnLine;
                                 linePairList.Add(linePair);
                                 linePair = new Vector[2];
                             }

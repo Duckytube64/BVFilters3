@@ -17,6 +17,9 @@ namespace INFOIBV
         private Bitmap InputImage;
         private Bitmap OutputImage;
         Color[,] Image;
+        bool useIntermediateOutput = false;
+        List<Vector> rThetaPairs = new List<Vector>();
+        List<Vector[]> segments = new List<Vector[]>();
 
         public INFOIBV()
         {
@@ -82,10 +85,39 @@ namespace INFOIBV
                     HoughPeakFinder();
                     break;
                 case ("Hough line detection"):
-                    HoughLineDectection();
-                    break;
-                case ("Hough visualization"):
-                    HoughVisualization();
+                    int minIntensity, minLength, maxGap;
+                    try
+                    {
+                        minIntensity = int.Parse(textBox3.Text);
+                        minLength = int.Parse(textBox4.Text);
+                        maxGap = int.Parse(textBox5.Text);
+                    }
+                    catch
+                    {
+                        break;
+                    }
+                    if (useIntermediateOutput)
+                    {
+                        foreach(Vector v in rThetaPairs)
+                        {
+                            HoughLineDectection(v.X, v.Y, minIntensity, minLength, maxGap);
+                        }
+                    }
+                    else
+                    {
+                        double r, theta;
+                        try
+                        {
+                            r = double.Parse(textBox2.Text.Split(' ')[0]);
+                            theta = double.Parse(textBox2.Text.Split(' ')[1]);
+                            theta = theta / 180 * Math.PI;
+                        }
+                        catch
+                        {
+                            break;
+                        }
+                        HoughLineDectection(r, theta, minIntensity, minLength, maxGap);
+                    }
                     break;
                 case ("Nothing"):
                 default:
@@ -259,7 +291,6 @@ namespace INFOIBV
 
             string message = "R/Theta-pairs: \n";
             bool second = false;
-            List<Vector> rThetaPairs = new List<Vector>();
             Dictionary<Vector, int> checkIfDouble = new Dictionary<Vector, int>();
 
             for (int x = 0; x < Image.GetLength(0); x++)
@@ -297,25 +328,8 @@ namespace INFOIBV
             MessageBox.Show(message, "R/Theta-pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void HoughLineDectection()
+        private void HoughLineDectection(double r, double theta, int minIntensity, int minLength, int maxGap)
         {
-            int minLength, maxGap;
-            double r, theta, minIntensity;
-
-            try
-            {
-                r = double.Parse(textBox2.Text.Split(' ')[0]);
-                theta = double.Parse(textBox2.Text.Split(' ')[1]);
-                theta = theta / 180 * Math.PI;
-                minIntensity = int.Parse(textBox3.Text);
-                minLength = int.Parse(textBox4.Text);
-                maxGap = int.Parse(textBox5.Text);
-            }
-            catch
-            {
-                return;
-            }
-
             Vector v = new Vector(Math.Cos(theta), Math.Sin(theta));
             Vector intersectionPoint = new Vector(v.X * r + Image.GetLength(0) / 2, v.Y * r + Image.GetLength(1) / 2);      // The algorithm starts from the centre of the image
             Vector lineFormula = new Vector(v.Y, -v.X);
@@ -393,56 +407,15 @@ namespace INFOIBV
             {
                 Vector v1 = linePairList.ElementAt(i).ElementAt(0);
                 Vector v2 = linePairList.ElementAt(i).ElementAt(1);
-
+                Vector[] newPair = new Vector[2];
+                newPair[0] = v1;
+                newPair[1] = v2;
+                segments.Add(newPair);
                 message += "Line segment " + (i + 1) + ": (" + v1.X + ", " + v1.Y + "), (" + v2.X + ", " + v2.Y + ")\n";
             }
 
             MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
-        
-        private void HoughVisualization()
-        {
-            List<Vector[]> linesegements = new List<Vector[]>();
-            string[] all;
-
-            try
-            {
-                all = textBox7.Text.Split('\n');
-                
-            }
-            catch
-            {
-                return;
-            }
-
-            foreach (string x in all)
-            {
-                string[] coordinates = x.Split(' ');
-                Vector[] points = new Vector[2];
-                points[0] = new Vector(double.Parse(coordinates[0]), double.Parse(coordinates[1]));
-                points[1] = new Vector(double.Parse(coordinates[2]), double.Parse(coordinates[3]));
-                linesegements.Add(points);
-
-            }
-
-            Pen redPen = new Pen(Color.Red, 2);
-
-            foreach (Vector[] vectors in linesegements)
-            {
-                using (var graphics = Graphics.FromImage(InputImage))
-                {
-                    graphics.DrawLine(redPen, (float) vectors[0].X, (float) vectors[0].Y, (float) vectors[1].X, (float) vectors[1].Y);
-                }
-            }
-
-            for (int x = 0; x < Image.GetLength(0); x++)
-            {
-                for (int y = 0; y < Image.GetLength(1); y++)
-                {
-                    Image[x, y] = InputImage.GetPixel(x, y);
-                }
-            }
-        }
+        }       
 
         // Initialising arrays seems to take a lot of time. Since we never change these arrays, we might as well define them once instead of each time the method below is called upon.
         int[,] edgeFilterX = new int[,]

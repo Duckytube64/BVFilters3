@@ -55,9 +55,10 @@
             // 
             // LoadImageButton
             // 
-            this.LoadImageButton.Location = new System.Drawing.Point(12, 12);
+            this.LoadImageButton.Location = new System.Drawing.Point(16, 15);
+            this.LoadImageButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.LoadImageButton.Name = "LoadImageButton";
-            this.LoadImageButton.Size = new System.Drawing.Size(98, 23);
+            this.LoadImageButton.Size = new System.Drawing.Size(131, 28);
             this.LoadImageButton.TabIndex = 0;
             this.LoadImageButton.Text = "Load image...";
             this.LoadImageButton.UseVisualStyleBackColor = true;
@@ -71,26 +72,29 @@
             // 
             // imageFileName
             // 
-            this.imageFileName.Location = new System.Drawing.Point(116, 14);
+            this.imageFileName.Location = new System.Drawing.Point(155, 17);
+            this.imageFileName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.imageFileName.Name = "imageFileName";
             this.imageFileName.ReadOnly = true;
-            this.imageFileName.Size = new System.Drawing.Size(207, 20);
+            this.imageFileName.Size = new System.Drawing.Size(275, 22);
             this.imageFileName.TabIndex = 1;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(13, 45);
+            this.pictureBox1.Location = new System.Drawing.Point(17, 55);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(512, 512);
+            this.pictureBox1.Size = new System.Drawing.Size(683, 630);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(422, 13);
+            this.applyButton.Location = new System.Drawing.Point(563, 16);
+            this.applyButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.applyButton.Name = "applyButton";
-            this.applyButton.Size = new System.Drawing.Size(103, 23);
+            this.applyButton.Size = new System.Drawing.Size(137, 28);
             this.applyButton.TabIndex = 3;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
@@ -103,9 +107,10 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(957, 0);
+            this.saveButton.Location = new System.Drawing.Point(1276, 0);
+            this.saveButton.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(95, 23);
+            this.saveButton.Size = new System.Drawing.Size(127, 28);
             this.saveButton.TabIndex = 4;
             this.saveButton.Text = "Save as BMP...";
             this.saveButton.UseVisualStyleBackColor = true;
@@ -113,18 +118,20 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(531, 45);
+            this.pictureBox2.Location = new System.Drawing.Point(708, 55);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(512, 512);
+            this.pictureBox2.Size = new System.Drawing.Size(683, 630);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(531, 15);
+            this.progressBar.Location = new System.Drawing.Point(708, 18);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(175, 20);
+            this.progressBar.Size = new System.Drawing.Size(233, 25);
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar.TabIndex = 6;
             this.progressBar.Visible = false;
@@ -138,28 +145,29 @@
             "Hough peak finder",
             "Hough line detection",
             "Hough visualization"});
-            this.comboBox1.Location = new System.Drawing.Point(841, 14);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBox1.Location = new System.Drawing.Point(1121, 17);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(92, 21);
+            this.comboBox1.Size = new System.Drawing.Size(121, 24);
             this.comboBox1.TabIndex = 7;
             this.comboBox1.Text = "Nothing";
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(778, 15);
-            this.textBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox1.Location = new System.Drawing.Point(1037, 18);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(59, 20);
+            this.textBox1.Size = new System.Drawing.Size(77, 22);
             this.textBox1.TabIndex = 1;
             this.textBox1.Visible = false;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(969, 22);
+            this.button1.Location = new System.Drawing.Point(1292, 27);
+            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(100, 28);
             this.button1.TabIndex = 11;
             this.button1.Text = "copy";
             this.button1.UseVisualStyleBackColor = true;
@@ -172,79 +180,85 @@
             "Nothing",
             "Prewitt",
             "Sobel"});
-            this.comboBox2.Location = new System.Drawing.Point(751, 14);
-            this.comboBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.comboBox2.Location = new System.Drawing.Point(1001, 17);
+            this.comboBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.comboBox2.Name = "comboBox2";
-            this.comboBox2.Size = new System.Drawing.Size(86, 21);
+            this.comboBox2.Size = new System.Drawing.Size(113, 24);
             this.comboBox2.TabIndex = 12;
             this.comboBox2.Text = "Nothing";
             this.comboBox2.Visible = false;
             // 
             // pictureBox3
             // 
-            this.pictureBox3.Location = new System.Drawing.Point(531, 45);
+            this.pictureBox3.Location = new System.Drawing.Point(708, 55);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(512, 512);
+            this.pictureBox3.Size = new System.Drawing.Size(683, 630);
             this.pictureBox3.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox3.TabIndex = 13;
             this.pictureBox3.TabStop = false;
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(736, 3);
+            this.textBox2.Location = new System.Drawing.Point(981, 4);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(132, 22);
             this.textBox2.TabIndex = 14;
             this.textBox2.Visible = false;
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(736, 28);
+            this.textBox3.Location = new System.Drawing.Point(981, 34);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(132, 22);
             this.textBox3.TabIndex = 15;
             this.textBox3.Visible = false;
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(736, 54);
+            this.textBox4.Location = new System.Drawing.Point(981, 66);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.Size = new System.Drawing.Size(132, 22);
             this.textBox4.TabIndex = 16;
             this.textBox4.Visible = false;
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(736, 80);
+            this.textBox5.Location = new System.Drawing.Point(981, 98);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
+            this.textBox5.Size = new System.Drawing.Size(132, 22);
             this.textBox5.TabIndex = 17;
             this.textBox5.Visible = false;
             // 
             // textBox6
             // 
-            this.textBox6.Location = new System.Drawing.Point(711, 15);
-            this.textBox6.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox6.Location = new System.Drawing.Point(948, 18);
+            this.textBox6.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(59, 20);
+            this.textBox6.Size = new System.Drawing.Size(77, 22);
             this.textBox6.TabIndex = 18;
             this.textBox6.Visible = false;
             // 
             // textBox7
             // 
-            this.textBox7.Location = new System.Drawing.Point(736, 3);
+            this.textBox7.Location = new System.Drawing.Point(981, 4);
+            this.textBox7.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.textBox7.Multiline = true;
             this.textBox7.Name = "textBox7";
             this.textBox7.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox7.Size = new System.Drawing.Size(100, 97);
+            this.textBox7.Size = new System.Drawing.Size(132, 118);
             this.textBox7.TabIndex = 19;
             this.textBox7.Visible = false;
             // 
             // INFOIBV
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1052, 576);
+            this.ClientSize = new System.Drawing.Size(1403, 709);
             this.Controls.Add(this.textBox7);
             this.Controls.Add(this.textBox6);
             this.Controls.Add(this.textBox1);
@@ -264,6 +278,7 @@
             this.Controls.Add(this.imageFileName);
             this.Controls.Add(this.LoadImageButton);
             this.Location = new System.Drawing.Point(10, 10);
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "INFOIBV";
             this.ShowIcon = false;
             this.Text = "INFOIBV";

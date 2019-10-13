@@ -396,6 +396,11 @@ namespace INFOIBV
 
             MessageBox.Show(message, "List of line pairs", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+        
+        private void HoughVisualisation()
+        {
+
+        }
 
         // Initialising arrays seems to take a lot of time. Since we never change these arrays, we might as well define them once instead of each time the method below is called upon.
         int[,] edgeFilterX = new int[,]

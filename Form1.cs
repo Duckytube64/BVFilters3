@@ -425,7 +425,7 @@ namespace INFOIBV
 
             }
 
-            Pen redPen = new Pen(Color.Red, 2);
+            Pen redPen = new Pen(Color.Red, 1);
 
             foreach (Vector[] vectors in linesegements)
             {

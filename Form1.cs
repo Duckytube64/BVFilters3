@@ -461,13 +461,15 @@ namespace INFOIBV
 
             Pen redPen = new Pen(Color.Red, 1);
 
+            Bitmap newBitmap = new Bitmap(InputImage);
+            Graphics graphics = Graphics.FromImage(newBitmap);
+
             foreach (Vector[] vectors in linesegements)
             {
-                using (var graphics = Graphics.FromImage(InputImage))
-                {
-                    graphics.DrawLine(redPen, (float) vectors[0].X, (float) vectors[0].Y, (float) vectors[1].X, (float) vectors[1].Y);
-                }
+                graphics.DrawLine(redPen, (float)vectors[0].X, (float)vectors[0].Y, (float)vectors[1].X, (float)vectors[1].Y);                
             }
+
+            InputImage = newBitmap;
 
             for (int x = 0; x < Image.GetLength(0); x++)
             {
